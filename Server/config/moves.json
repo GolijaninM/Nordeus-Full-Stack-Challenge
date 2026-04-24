@@ -1,0 +1,163 @@
+{
+  "slash": {
+    "name": "Slash",
+    "type": "physical",
+    "effect": "damage",
+    "base_value": 15
+  },
+  "shield_up": {
+    "name": "Shield Up",
+    "type": "status",
+    "effect": "buff",
+    "target_stat": "defense",
+    "duration": 2
+  },
+  "battle_cry": {
+    "name": "Battle Cry",
+    "type": "status",
+    "effect": "buff",
+    "target_stat": "attack",
+    "duration": 2
+  },
+  "second_wind": {
+    "name": "Second Wind",
+    "type": "magic",
+    "effect": "heal",
+    "base_value": 20
+  },
+  "shadow_bolt": {
+    "name": "Shadow Bolt",
+    "type": "magic",
+    "effect": "damage",
+    "base_value": 25
+  },
+  "drain_life": {
+    "name": "Drain Life",
+    "type": "magic",
+    "effect": "lifesteal",
+    "base_value": 10
+  },
+  "curse": {
+    "name": "Curse",
+    "type": "status",
+    "effect": "debuff",
+    "target_stat": "attack",
+    "duration": 2
+  },
+  "dark_pact": {
+    "name": "Dark Pact",
+    "type": "status",
+    "effect": "buff_with_cost",
+    "target_stat": "magic",
+    "cost_hp": 15,
+    "duration": 2
+  },
+  "bite": {
+    "name": "Bite",
+    "type": "physical",
+    "effect": "damage",
+    "base_value": 15
+  },
+  "web_throw": {
+    "name": "Web Throw",
+    "type": "physical",
+    "effect": "damage_and_debuff",
+    "base_value": 5,
+    "target_stat": "defense",
+    "duration": 2
+  },
+  "pounce": {
+    "name": "Pounce",
+    "type": "physical",
+    "effect": "damage",
+    "base_value": 25
+  },
+  "skitter": {
+    "name": "Skitter",
+    "type": "status",
+    "effect": "buff",
+    "target_stat": "defense",
+    "duration": 2
+  },
+  "flame_breath": {
+    "name": "Flame Breath",
+    "type": "magic",
+    "effect": "damage",
+    "base_value": 30
+  },
+  "claw_swipe": {
+    "name": "Claw Swipe",
+    "type": "physical",
+    "effect": "damage",
+    "base_value": 20
+  },
+  "intimidate": {
+    "name": "Intimidate",
+    "type": "status",
+    "effect": "debuff",
+    "target_stat": "attack",
+    "duration": 2
+  },
+  "dragon_scales": {
+    "name": "Dragon Scales",
+    "type": "status",
+    "effect": "buff",
+    "target_stat": "defense",
+    "duration": 2
+  },
+  "rusty_blade": {
+    "name": "Rusty Blade",
+    "type": "physical",
+    "effect": "damage",
+    "base_value": 12
+  },
+  "dirty_kick": {
+    "name": "Dirty Kick",
+    "type": "physical",
+    "effect": "damage_and_debuff",
+    "base_value": 5,
+    "target_stat": "defense",
+    "duration": 2
+  },
+  "frenzy": {
+    "name": "Frenzy",
+    "type": "status",
+    "effect": "buff",
+    "target_stat": "attack",
+    "duration": 2
+  },
+  "headbutt": {
+    "name": "Headbutt",
+    "type": "physical",
+    "effect": "damage",
+    "base_value": 20
+  },
+  "firebolt": {
+    "name": "Firebolt",
+    "type": "magic",
+    "effect": "damage",
+    "base_value": 18
+  },
+  "arcane_surge": {
+    "name": "Arcane Surge",
+    "type": "status",
+    "effect": "buff",
+    "target_stat": "magic",
+    "duration": 2
+  },
+  "mana_drain": {
+    "name": "Mana Drain",
+    "type": "magic",
+    "effect": "damage_and_debuff",
+    "base_value": 8,
+    "target_stat": "magic",
+    "duration": 2
+  },
+  "hex_shield": {
+    "name": "Hex Shield",
+    "type": "status",
+    "effect": "buff",
+    "target_stat": "defense",
+    "duration": 2
+  }
+}
