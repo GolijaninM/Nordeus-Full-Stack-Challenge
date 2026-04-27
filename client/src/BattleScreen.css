@@ -1,0 +1,221 @@
+.battle-container {
+  height: 100vh;
+  width: 100vw;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: white;
+}
+
+/* --- CONTROLS (Top of screen) --- */
+.battle-controls {
+  order: -1;
+  height: auto;
+  background-color: #1a1a1a;
+  border-bottom: 4px solid #444;
+  display: flex;
+  padding: 20px;
+  gap: 20px;
+}
+
+/* Monster side */
+.monster-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Hero battle zone with circular moves */
+.hero-battle-zone {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 400px;
+  width: 300px;
+}
+
+/* Health Bars */
+.hud {
+  background: rgba(0, 0, 0, 0.7);
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: 2px solid #555;
+  min-width: 160px;
+  margin-bottom: 110px;
+}
+
+.hud h3 {
+  margin: 0 0 8px 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 0.9rem;
+}
+
+.health-bar-bg {
+  width: 100%;
+  height: 20px;
+  background-color: #333;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #111;
+}
+
+.health-bar-fill {
+  height: 100%;
+  transition: width 0.3s ease-in-out;
+}
+
+.hero-fill { 
+  background-color: #2ecc71; 
+}
+
+.monster-fill { 
+  background-color: #e74c3c; 
+}
+
+.hp-text {
+  margin: 5px 0 0 0;
+  font-size: 0.9rem;
+  text-align: right;
+  font-weight: bold;
+}
+
+/* Characters - on the ground */
+.character-sprite {
+  position: relative;
+  bottom: 30px;
+  transform: scale(5);
+  filter: image-rendering pixelated;
+}
+
+.hero-sprite {
+  margin-bottom: 0;
+}
+
+.monster-sprite {
+  margin-bottom: 0;
+}
+
+/* Circular ability buttons around hero */
+.circular-moves {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.move-button.circular {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  padding: 3px;
+  text-align: center;
+}
+
+/* Position 4 buttons in a circle (top, right, bottom, left) */
+.move-button.circular:nth-child(1) {
+  top: 0px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.move-button.circular:nth-child(2) {
+  top: 50%;
+  right: 0px;
+  transform: translateY(-50%);
+}
+
+.move-button.circular:nth-child(3) {
+  bottom: 0px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.move-button.circular:nth-child(4) {
+  top: 50%;
+  left: 0px;
+  transform: translateY(-50%);
+}
+
+/* --- ARENA (Takes up most of the screen) --- */
+.battle-arena {
+  flex-grow: 1;
+  position: relative;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 40px;
+  order: 1;
+}
+
+/* The combat text log */
+.combat-log {
+  flex: 1;
+  background-color: #0a0a0a;
+  border: 2px solid #333;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.combat-log p {
+  font-size: 1.2rem;
+  text-align: center;
+  margin: 0;
+}
+
+/* Move button base styles */
+.move-button {
+  background-color: #2c3e50;
+  border: 2px solid #34495e;
+  border-radius: 8px;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.move-button:hover:not(:disabled) {
+  background-color: #34495e;
+  border-color: #f1c40f;
+}
+
+.move-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Different colors for different move types */
+.move-button.physical { 
+  border-left: 6px solid #e67e22; 
+}
+
+.move-button.magic { 
+  border-left: 6px solid #9b59b6; 
+}
+
+.move-button.status { 
+  border-left: 6px solid #3498db; 
+}
