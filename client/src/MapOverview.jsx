@@ -1,6 +1,6 @@
 import React from 'react';
 import './MapOverview.css';
-import forestMap from '../images/forest-map.jpg'; 
+import forestMap from '../images/forest-map.png'; 
 
 const MapOverview = ({ encounters, onEnterBattle }) => {
   return (
