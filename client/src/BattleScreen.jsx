@@ -4,51 +4,121 @@ import combatField from '../images/combat-field.jpg';
 import LogicalCropImage from './LogicalCropImage';
 
 const BattleScreen = ({ hero, monster, onBattleEnd }) => {
-  // Track the active HP locally during the fight
+
   const [heroHp, setHeroHp] = useState(hero.current_hp);
-  const [monsterHp, setMonsterHp] = useState(monster.max_hp);
+  const [heroMaxHp] = useState(hero.max_hp);
+  const [heroAtk, setHeroAtk] = useState(hero.attack);
+  const [heroDef, setHeroDef] = useState(hero.defense);
+  const [heroMag, setHeroMag] = useState(hero.magic);
+
+  const [heroBaseAtk] = useState(hero.attack);
+  const [heroBaseDef] = useState(hero.defense);
+  const [heroBaseMag] = useState(hero.magic);
+
+  const [heroAtkDuration, setHeroAtkDuration] = useState(0);
+  const [heroDefDuration, setHeroDefDuration] = useState(0);
+  const [heroMagDuration, setHeroMagDuration] = useState(0);
   
-  // Track what happened to display on screen
+  const [monsterHp, setMonsterHp] = useState(monster.max_hp);
+  const [monsterMaxHp] = useState(monster.max_hp);
+  const [monsterAtk, setMonsterAtk] = useState(monster.attack || 0);
+  const [monsterDef, setMonsterDef] = useState(monster.defense || 0);
+  const [monsterMag, setMonsterMag] = useState(monster.magic || 0);
+
+  const [monsterBaseAtk] = useState(monster.attack || 0);
+  const [monsterBaseDef] = useState(monster.defense || 0);
+  const [monsterBaseMag] = useState(monster.magic || 0);
+
+  const [monsterAtkDuration, setMonsterAtkDuration] = useState(0);
+  const [monsterDefDuration, setMonsterDefDuration] = useState(0);
+  const [monsterMagDuration, setMonsterMagDuration] = useState(0);
+  
   const [combatLog, setCombatLog] = useState(`A wild ${monster.name} appears!`);
   
-  // Prevent spam-clicking while waiting for the server
   const [isProcessing, setIsProcessing] = useState(false);
+
+  const decrementStatDurations = () => {
+    setHeroAtkDuration(prev => Math.max(0, prev - 1));
+    setHeroDefDuration(prev => Math.max(0, prev - 1));
+    setHeroMagDuration(prev => Math.max(0, prev - 1));
+    setMonsterAtkDuration(prev => Math.max(0, prev - 1));
+    setMonsterDefDuration(prev => Math.max(0, prev - 1));
+    setMonsterMagDuration(prev => Math.max(0, prev - 1));
+  };
 
   const handleMoveSelect = async (moveId) => {
     if (isProcessing) return;
     setIsProcessing(true);
 
+    // Check if any stat durations have expired and reset to base if needed
+    let currentHeroAtk = heroAtkDuration > 0 ? heroAtk : heroBaseAtk;
+    let currentHeroDef = heroDefDuration > 0 ? heroDef : heroBaseDef;
+    let currentHeroMag = heroMagDuration > 0 ? heroMag : heroBaseMag;
+    
+    let currentMonsterAtk = monsterAtkDuration > 0 ? monsterAtk : monsterBaseAtk;
+    let currentMonsterDef = monsterDefDuration > 0 ? monsterDef : monsterBaseDef;
+    let currentMonsterMag = monsterMagDuration > 0 ? monsterMag : monsterBaseMag;
+
     try {
-      // 1. Construct the URL with query parameters for the Flask server
       const url = new URL('http://localhost:5000/api/play-turn');
       url.searchParams.append('hero_hp', heroHp);
-      url.searchParams.append('hero_atk', hero.attack);
-      url.searchParams.append('hero_def', hero.defense);
-      url.searchParams.append('hero_mag', hero.magic);
+      url.searchParams.append('hero_max_hp', heroMaxHp);
+      url.searchParams.append('hero_atk', currentHeroAtk);
+      url.searchParams.append('hero_def', currentHeroDef);
+      url.searchParams.append('hero_mag', currentHeroMag);
       url.searchParams.append('monster_id', monster.id);
       url.searchParams.append('monster_hp', monsterHp);
       url.searchParams.append('move_id', moveId);
 
-      // 2. Fetch the turn result
       const response = await fetch(url);
       if (!response.ok) throw new Error("Network response was not ok");
       const data = await response.json();
 
-      // 3. Process the visual updates step-by-step
-      
-      // Update Monster HP and log the Hero's attack
-      setMonsterHp(data.monster_hp_remaining);
-      setCombatLog(`${hero.name} used ${data.hero_move} and dealt ${data.hero_damage} damage!`);
+      decrementStatDurations();
 
-      // If the monster didn't die, wait 1.5 seconds and show its counter-attack
+      // 3. Update all stats from response
+      setHeroAtk(data.hero_state.attack);
+      setHeroDef(data.hero_state.defense);
+      setHeroMag(data.hero_state.magic);
+
+      setMonsterHp(data.monster_state.hp);
+      setMonsterAtk(data.monster_state.attack);
+      setMonsterDef(data.monster_state.defense);
+      setMonsterMag(data.monster_state.magic);
+
+
+      // Update stat change durations based on stat changes in response
+      if (data.hero_stat_changes && data.hero_stat_changes.length > 0) {
+        data.hero_stat_changes.forEach(change => {
+          if (change.stat === 'attack') setHeroAtkDuration(2);
+          if (change.stat === 'defense') setHeroDefDuration(2);
+          if (change.stat === 'magic') setHeroMagDuration(2);
+        });
+      }
+
+      if (data.monster_stat_changes && data.monster_stat_changes.length > 0) {
+        data.monster_stat_changes.forEach(change => {
+          if (change.stat === 'attack') setMonsterAtkDuration(2);
+          if (change.stat === 'defense') setMonsterDefDuration(2);
+          if (change.stat === 'magic') setMonsterMagDuration(2);
+        });
+      }
+
+      // Display the hero's action
+      setCombatLog(`${hero.name} used ${data.hero_move} and dealt ${data.hero_damage} damage!`);
+      console.log("Heros defense: " + currentHeroDef);
+      console.log("Heros attack: " + currentHeroAtk);
+
       if (!data.match_over) {
         setTimeout(() => {
-          setHeroHp(data.hero_hp_remaining);
+          // Display the monster's counterattack
+          setHeroHp(data.hero_state.hp);
           setCombatLog(`${monster.name} used ${data.monster_move} and dealt ${data.monster_damage} damage!`);
+          
           setIsProcessing(false);
         }, 1500);
       } else {
-        // Match is over!
+        setHeroHp(data.hero_state.hp);
         setTimeout(() => {
           if (data.winner === 'hero') {
             setCombatLog(`Victory! ${monster.name} was defeated!`);
@@ -67,9 +137,8 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
     }
   };
 
-  // Calculate health bar percentages safely (avoiding negative widths)
-  const heroHpPercent = Math.max(0, (heroHp / hero.max_hp) * 100);
-  const monsterHpPercent = Math.max(0, (monsterHp / monster.max_hp) * 100);
+  const heroHpPercent = Math.max(0, (heroHp / heroMaxHp) * 100);
+  const monsterHpPercent = Math.max(0, (monsterHp / monsterMaxHp) * 100);
 
   return (
     <div 
@@ -85,7 +154,7 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
             <div className="health-bar-bg">
               <div className="health-bar-fill monster-fill" style={{ width: `${monsterHpPercent}%` }}></div>
             </div>
-            <p className="hp-text">{monsterHp} / {monster.max_hp} HP</p>
+            <p className="hp-text">{monsterHp} / {monsterMaxHp} HP</p>
           </div>
           <div className="character-sprite monster-sprite">
             <LogicalCropImage src="/images/monsters.png" cropCoords={{ sx: 0, sy: 0, sWidth: 32, sHeight: 32 }} />
@@ -99,7 +168,7 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
             <div className="health-bar-bg">
               <div className="health-bar-fill hero-fill" style={{ width: `${heroHpPercent}%` }}></div>
             </div>
-            <p className="hp-text">{heroHp} / {hero.max_hp} HP</p>
+            <p className="hp-text">{heroHp} / {heroMaxHp} HP</p>
           </div>
           
           <div className="character-sprite hero-sprite">
