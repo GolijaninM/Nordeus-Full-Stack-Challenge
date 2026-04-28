@@ -97,6 +97,7 @@
 
 .hero-sprite {
   margin-bottom: 0;
+  transform: scale(5) scaleX(-1);
 }
 
 .monster-sprite {
