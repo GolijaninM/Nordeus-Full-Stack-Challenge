@@ -10,6 +10,7 @@
     "type": "status",
     "effect": "buff",
     "target_stat": "defense",
+    "stat_change": 5,
     "duration": 2
   },
   "battle_cry": {
@@ -17,6 +18,7 @@
     "type": "status",
     "effect": "buff",
     "target_stat": "attack",
+    "stat_change": 5,
     "duration": 2
   },
   "second_wind": {
@@ -42,6 +44,7 @@
     "type": "status",
     "effect": "debuff",
     "target_stat": "attack",
+    "stat_change": 5,
     "duration": 2
   },
   "dark_pact": {
@@ -49,6 +52,7 @@
     "type": "status",
     "effect": "buff_with_cost",
     "target_stat": "magic",
+    "stat_change": 5,
     "cost_hp": 15,
     "duration": 2
   },
@@ -64,6 +68,7 @@
     "effect": "damage_and_debuff",
     "base_value": 5,
     "target_stat": "defense",
+    "stat_change": 5,
     "duration": 2
   },
   "pounce": {
@@ -77,6 +82,7 @@
     "type": "status",
     "effect": "buff",
     "target_stat": "defense",
+    "stat_change": 5,
     "duration": 2
   },
   "flame_breath": {
@@ -96,6 +102,7 @@
     "type": "status",
     "effect": "debuff",
     "target_stat": "attack",
+    "stat_change": 5,
     "duration": 2
   },
   "dragon_scales": {
@@ -103,6 +110,7 @@
     "type": "status",
     "effect": "buff",
     "target_stat": "defense",
+    "stat_change": 5,
     "duration": 2
   },
   "rusty_blade": {
@@ -117,6 +125,7 @@
     "effect": "damage_and_debuff",
     "base_value": 5,
     "target_stat": "defense",
+    "stat_change": 5,
     "duration": 2
   },
   "frenzy": {
@@ -124,6 +133,7 @@
     "type": "status",
     "effect": "buff",
     "target_stat": "attack",
+    "stat_change": 5,
     "duration": 2
   },
   "headbutt": {
@@ -143,6 +153,7 @@
     "type": "status",
     "effect": "buff",
     "target_stat": "magic",
+    "stat_change": 5,
     "duration": 2
   },
   "mana_drain": {
@@ -151,6 +162,7 @@
     "effect": "damage_and_debuff",
     "base_value": 8,
     "target_stat": "magic",
+    "stat_change": 5,
     "duration": 2
   },
   "hex_shield": {
@@ -158,6 +170,7 @@
     "type": "status",
     "effect": "buff",
     "target_stat": "defense",
+    "stat_change": 5,
     "duration": 2
   }
 }
