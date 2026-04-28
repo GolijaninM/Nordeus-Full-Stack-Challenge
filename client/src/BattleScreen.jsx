@@ -122,8 +122,14 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
         setTimeout(() => {
           if (data.winner === 'hero') {
             setCombatLog(`Victory! ${monster.name} was defeated!`);
-            // Wait a moment so the player can read the victory text before leaving
-            setTimeout(() => onBattleEnd({ won: true, monster: monster }), 2000);
+            setTimeout(() => {
+              onBattleEnd({ 
+                won: true, 
+                monster: monster, 
+                xp: data.xp_earned, 
+                newMove: data.learned_move 
+              });
+            }, 2000);
           } else {
             setCombatLog(`Defeat! ${hero.name} has fallen...`);
             setTimeout(() => onBattleEnd({ won: false, monster: monster }), 2000);

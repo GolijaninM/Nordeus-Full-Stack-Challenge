@@ -150,7 +150,7 @@ def determine_winner(hero_state, monster_state):
     return None
 
 
-def build_turn_response(hero_state, monster_state, hero_result, monster_result=None, match_over=False, winner=None):
+def build_turn_response(hero_state, monster_state, hero_result, monster_result=None, match_over=False, winner=None, xp_earned=None, learned_move=None):
     monster_result = monster_result or {
         "move_name": None,
         "effect": None,
@@ -160,7 +160,7 @@ def build_turn_response(hero_state, monster_state, hero_result, monster_result=N
         "stat_changes": [],
     }
 
-    return jsonify({
+    response = {
         "hero_move": hero_result.get("move_name"),
         "hero_damage": hero_result.get("damage", 0),
         "hero_heal": hero_result.get("heal", 0),
@@ -177,7 +177,15 @@ def build_turn_response(hero_state, monster_state, hero_result, monster_result=N
         "monster_state": serialize_state(monster_state),
         "match_over": match_over,
         "winner": winner,
-    })
+    }
+
+    if xp_earned is not None:
+        response["xp_earned"] = xp_earned
+    
+    if learned_move is not None:
+        response["learned_move"] = learned_move
+
+    return jsonify(response)
 
 
 @app.route('/api/start-run', methods=['GET'])
@@ -277,12 +285,29 @@ def play_turn():
 
     # End immediately if the hero's action ends the battle.
     if monster_state.get("hp", 0) <= 0 or hero_state.get("hp", 0) <= 0:
+        # Check if the monster died from the hero's attack (hero wins)
+        xp_earned = None
+        learned_move = None
+        
+        if monster_state.get("hp", 0) <= 0 and hero_state.get("hp", 0) > 0:
+            # Calculate XP (e.g., half of the monster's max HP)
+            xp_earned = monster_data.get('max_hp', 50) // 2
+            
+            # Pick a random move from the monster to learn
+            monster_move_list = monster_data.get('moves', [])
+            if monster_move_list:
+                learned_move_id = random.choice(monster_move_list)
+                learned_move = moves[learned_move_id].copy()
+                learned_move['id'] = learned_move_id  # Ensure the ID is attached
+        
         return build_turn_response(
             hero_state=hero_state,
             monster_state=monster_state,
             hero_result=hero_result,
             match_over=True,
             winner=determine_winner(hero_state, monster_state),
+            xp_earned=xp_earned,
+            learned_move=learned_move,
         )
 
     # Resolve monster's retaliation.
@@ -304,6 +329,21 @@ def play_turn():
 
     match_over = hero_state.get("hp", 0) <= 0 or monster_state.get("hp", 0) <= 0
 
+    # Check if the monster died after retaliation (hero wins)
+    xp_earned = None
+    learned_move = None
+    
+    if match_over and monster_state.get("hp", 0) <= 0 and hero_state.get("hp", 0) > 0:
+        # Calculate XP (e.g., half of the monster's max HP)
+        xp_earned = monster_data.get('max_hp', 50) // 2
+        
+        # Pick a random move from the monster to learn
+        monster_move_list = monster_data.get('moves', [])
+        if monster_move_list:
+            learned_move_id = random.choice(monster_move_list)
+            learned_move = moves[learned_move_id].copy()
+            learned_move['id'] = learned_move_id  # Ensure the ID is attached
+
     return build_turn_response(
         hero_state=hero_state,
         monster_state=monster_state,
@@ -311,6 +351,8 @@ def play_turn():
         monster_result=monster_result,
         match_over=match_over,
         winner=determine_winner(hero_state, monster_state),
+        xp_earned=xp_earned,
+        learned_move=learned_move,
     )
 
 
