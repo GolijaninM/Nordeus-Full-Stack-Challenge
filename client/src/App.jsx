@@ -82,7 +82,7 @@ function App() {
         newMap[monsterIndex].status = 'completed';
         
         // Unlock the next one if it exists
-        if (monsterIndex + 1 < newMap.length) {
+        if (monsterIndex + 1 < newMap.length & newMap[monsterIndex + 1].status === 'locked') {
           newMap[monsterIndex + 1].status = 'next';
         }
         return newMap;
