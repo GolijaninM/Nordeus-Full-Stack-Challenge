@@ -163,7 +163,21 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
             <p className="hp-text">{monsterHp} / {monsterMaxHp} HP</p>
           </div>
           <div className="character-sprite monster-sprite">
-            <LogicalCropImage src="/images/monsters.png" cropCoords={{ sx: 0, sy: 0, sWidth: 32, sHeight: 32 }} />
+            {monster.id === "goblin_warrior" && (
+                <LogicalCropImage src="/images/monsters.png" cropCoords={{ sx: 7*32, sy: 0, sWidth: 32, sHeight: 32 }} />
+            )}
+            {monster.id === "goblin_mage" && (
+                <LogicalCropImage src="/images/monsters.png" cropCoords={{ sx: 6*32, sy: 0, sWidth: 32, sHeight: 32 }} />
+            )}
+            {monster.id === "giant_spider" && (
+                <LogicalCropImage src="/images/monsters.png" cropCoords={{ sx: 8*32, sy: 6*32, sWidth: 32, sHeight: 32 }} />
+            )}
+            {monster.id === "witch" && (
+                <LogicalCropImage src="/images/monsters.png" cropCoords={{ sx: 4*32, sy: 5*32, sWidth: 32, sHeight: 32 }} />
+            )}
+            {monster.id === "dragon" && (
+                <LogicalCropImage src="/images/monsters.png" cropCoords={{ sx: 2*32, sy: 8*32, sWidth: 32, sHeight: 32 }} />
+            )}
           </div>
         </div>
 
