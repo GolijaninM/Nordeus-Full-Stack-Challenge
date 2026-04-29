@@ -197,7 +197,7 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
 
           {/* Circular ability buttons around hero */}
           <div className="circular-moves">
-            {hero.equipped_moves.map((move, index) => (
+            {hero.equipped_moves.slice(0, 4).map((move, index) => (
               <button 
                 key={move.id} 
                 className={`move-button circular ${move.type}`}

@@ -10,6 +10,8 @@ function App() {
   const [encounters, setEncounters] = useState([]);
   const [activeMonster, setActiveMonster] = useState(null); // Track the current fight
   const [battleResultData, setBattleResultData] = useState(null); // Track battle results
+  const [allLearnedMoves, setAllLearnedMoves] = useState([]); // Track all abilities learned
+  const [allLearnedMovesDetails, setAllLearnedMovesDetails] = useState({}); // Store full details of all learned moves
 
   const handleStartGame = async () => {
     try {
@@ -17,6 +19,17 @@ function App() {
       const data = await response.json();
       setHeroState(data.hero);
       setEncounters(data.run_encounters);
+      // Initialize all learned moves with default moves
+      const moveIds = data.hero.equipped_moves.map(m => m.id);
+      setAllLearnedMoves(moveIds);
+      
+      // Store full details of all learned moves
+      const moveDetails = {};
+      data.hero.equipped_moves.forEach(move => {
+        moveDetails[move.id] = move;
+      });
+      setAllLearnedMovesDetails(moveDetails);
+      
       setCurrentScreen('map');
     } catch (error) {
       console.error("Failed to fetch game data:", error);
@@ -36,12 +49,30 @@ function App() {
 
   const handleCloseResult = () => {
     if (battleResultData.won) {
+      const newMove = battleResultData.newMove;
+      const newMoveId = newMove.id;
 
-      setHeroState(prevHero => ({
-        ...prevHero,
-        current_xp: prevHero.current_xp + battleResultData.xp,
-        equipped_moves: [...prevHero.equipped_moves, battleResultData.newMove]
+      // Add learned move to all learned moves if not already there
+      setAllLearnedMoves(prevMoves => {
+        if (!prevMoves.includes(newMoveId)) {
+          return [...prevMoves, newMoveId];
+        }
+        return prevMoves;
+      });
+
+      // Store full details of the new learned move
+      setAllLearnedMovesDetails(prevDetails => ({
+        ...prevDetails,
+        [newMoveId]: newMove
       }));
+
+      // Update hero state - add XP but DON'T auto-equip the new move
+      setHeroState(prevHero => {
+        return {
+          ...prevHero,
+          current_xp: prevHero.current_xp + battleResultData.xp
+        };
+      });
 
       setEncounters(prevMap => {
         const newMap = [...prevMap];
@@ -62,6 +93,20 @@ function App() {
     setCurrentScreen('map');
   };
 
+  const handleSelectAbilities = (selectedMoveIds) => {
+    setHeroState(prevHero => {
+      // Build equipped moves from selected IDs using stored move details
+      const equippedMoves = selectedMoveIds
+        .map(moveId => allLearnedMovesDetails[moveId])
+        .filter(m => m !== undefined);
+      
+      return {
+        ...prevHero,
+        equipped_moves: equippedMoves
+      };
+    });
+  };
+
   return (
     <div>
       {currentScreen === 'menu' && (
@@ -70,8 +115,12 @@ function App() {
       
       {currentScreen === 'map' && (
         <MapOverview 
-          encounters={encounters} 
-          onEnterBattle={handleEnterBattle} 
+          encounters={encounters}
+          heroState={heroState}
+          allLearnedMoves={allLearnedMoves}
+          allLearnedMovesDetails={allLearnedMovesDetails}
+          onEnterBattle={handleEnterBattle}
+          onSelectAbilities={handleSelectAbilities}
         />
       )}
 

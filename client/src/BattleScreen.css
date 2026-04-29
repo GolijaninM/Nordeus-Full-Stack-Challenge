@@ -107,24 +107,46 @@
 /* Circular ability buttons around hero */
 .circular-moves {
   position: absolute;
-  width: 200px;
-  height: 200px;
-  top: -80px;
+  width: 240px;
+  height: 240px;
+  top: -100px;
   left: 50%;
   transform: translateX(-50%);
 }
 
 .move-button.circular {
   position: absolute;
-  width: 50px;
-  height: 50px;
+  width: 65px;
+  height: 65px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.6rem;
-  padding: 3px;
+  font-size: 0.65rem;
+  padding: 4px;
   text-align: center;
+  font-weight: bold;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  border: 2px solid #34495e;
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  color: white;
+}
+
+.move-button.circular:not(:disabled):hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 20px rgba(244, 208, 63, 0.8), 0 4px 12px rgba(0, 0, 0, 0.7);
+  border-color: #f4d03f;
+  background: linear-gradient(135deg, #34495e 0%, #3d5a80 100%);
+}
+
+.move-button.circular:disabled {
+  opacity: 0.6;
+}
+
+.move-name {
+  display: block;
+  line-height: 1.1;
 }
 
 /* Position 4 buttons in a circle (top, right, bottom, left) */
@@ -134,10 +156,18 @@
   transform: translateX(-50%);
 }
 
+.move-button.circular:nth-child(1):not(:disabled):hover {
+  transform: translateX(-50%) scale(1.15);
+}
+
 .move-button.circular:nth-child(2) {
   top: 50%;
   right: 0px;
   transform: translateY(-50%);
+}
+
+.move-button.circular:nth-child(2):not(:disabled):hover {
+  transform: translateY(-50%) scale(1.15);
 }
 
 .move-button.circular:nth-child(3) {
@@ -146,10 +176,34 @@
   transform: translateX(-50%);
 }
 
+.move-button.circular:nth-child(3):not(:disabled):hover {
+  transform: translateX(-50%) scale(1.15);
+}
+
 .move-button.circular:nth-child(4) {
   top: 50%;
   left: 0px;
   transform: translateY(-50%);
+}
+
+.move-button.circular:nth-child(4):not(:disabled):hover {
+  transform: translateY(-50%) scale(1.15);
+}
+
+/* More vibrant move type colors for circular buttons */
+.move-button.circular.physical { 
+  border-left: 8px solid #e67e22;
+  border-right: 2px solid #34495e;
+}
+
+.move-button.circular.magic { 
+  border-left: 8px solid #9b59b6;
+  border-right: 2px solid #34495e;
+}
+
+.move-button.circular.status { 
+  border-left: 8px solid #3498db;
+  border-right: 2px solid #34495e;
 }
 
 /* --- ARENA (Takes up most of the screen) --- */

@@ -1,10 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './MapOverview.css';
-import forestMap from '../images/forest-map.png'; 
+import forestMap from '../images/forest-map.png';
+import AbilitySelector from './AbilitySelector';
 
-const MapOverview = ({ encounters, onEnterBattle }) => {
+const MapOverview = ({ encounters, heroState, allLearnedMoves, allLearnedMovesDetails, onEnterBattle, onSelectAbilities }) => {
+  const [showAbilitySelector, setShowAbilitySelector] = useState(false);
+
+  const handleSelectAbilities = (selectedMoveIds) => {
+    onSelectAbilities(selectedMoveIds);
+  };
+
   return (
     <div className="map-page-container">
+      {/* Ability Selector Button */}
+      <button className="ability-selector-btn" onClick={() => setShowAbilitySelector(true)}>
+        ⚔️ Select Abilities
+      </button>
 
       <div 
         className="game-board-wrapper" 
@@ -36,6 +47,17 @@ const MapOverview = ({ encounters, onEnterBattle }) => {
           );
         })}
       </div>
+
+      {/* Ability Selector Modal */}
+      {showAbilitySelector && heroState && (
+        <AbilitySelector
+          heroState={heroState}
+          allLearnedMoves={allLearnedMoves}
+          allLearnedMovesDetails={allLearnedMovesDetails}
+          onClose={() => setShowAbilitySelector(false)}
+          onConfirm={handleSelectAbilities}
+        />
+      )}
     </div>
   );
 };
