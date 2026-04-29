@@ -1,0 +1,113 @@
+.stat-upgrade-panel {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 100;
+  width: min(360px, calc(100vw - 40px));
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: rgba(8, 12, 18, 0.9);
+  border: 1px solid rgba(241, 196, 15, 0.3);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
+}
+
+.stat-upgrade-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.stat-upgrade-kicker {
+  margin: 0 0 4px;
+  color: #f1c40f;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 1.6px;
+}
+
+.stat-upgrade-header h2 {
+  margin: 0;
+  color: #f5f7fa;
+  font-size: 1.15rem;
+}
+
+.stat-upgrade-xp {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  color: #d7dde5;
+  min-width: 52px;
+}
+
+.stat-upgrade-xp span {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+}
+
+.stat-upgrade-xp strong {
+  color: #ffffff;
+  font-size: 1.3rem;
+}
+
+.stat-upgrade-list {
+  display: grid;
+  gap: 10px;
+}
+
+.stat-upgrade-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.stat-upgrade-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stat-upgrade-name {
+  color: #ecf0f1;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.stat-upgrade-value {
+  color: #b7c0cc;
+  font-size: 0.82rem;
+}
+
+.stat-upgrade-button {
+  min-width: 126px;
+  padding: 9px 12px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #1f8b4c 0%, #29b765 100%);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 6px 16px rgba(31, 139, 76, 0.28);
+}
+
+.stat-upgrade-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(31, 139, 76, 0.38);
+}
+
+.stat-upgrade-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  box-shadow: none;
+}

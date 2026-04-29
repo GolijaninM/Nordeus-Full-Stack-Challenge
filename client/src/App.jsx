@@ -1,8 +1,48 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import MainMenu from './MainMenu';
 import MapOverview from './MapOverview';
 import BattleScreen from './BattleScreen';
 import BattleResultScreen from './BattleResultScreen';
+
+const HERO_PROGRESS_STORAGE_KEY = 'nordeus.heroProgression';
+const STAT_UPGRADE_COST = 20;
+const STAT_UPGRADE_AMOUNT = 5;
+
+const readStoredHeroProgression = () => {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  try {
+    const rawProgression = window.localStorage.getItem(HERO_PROGRESS_STORAGE_KEY);
+    return rawProgression ? JSON.parse(rawProgression) : null;
+  } catch (error) {
+    console.error('Failed to read stored hero progression:', error);
+    return null;
+  }
+};
+
+const mergeHeroState = (baseHero, storedHero) => {
+  if (!storedHero) {
+    return baseHero;
+  }
+
+  const mergedHero = {
+    ...baseHero,
+    ...storedHero,
+    current_xp: storedHero.current_xp ?? baseHero.current_xp ?? 0,
+    attack: storedHero.attack ?? baseHero.attack,
+    defense: storedHero.defense ?? baseHero.defense,
+    magic: storedHero.magic ?? baseHero.magic,
+    max_hp: storedHero.max_hp ?? baseHero.max_hp,
+    equipped_moves: baseHero.equipped_moves
+  };
+
+  return {
+    ...mergedHero,
+    current_hp: mergedHero.max_hp
+  };
+};
 
 function App() {
   const [currentScreen, setCurrentScreen] = useState('menu');
@@ -17,7 +57,8 @@ function App() {
     try {
       const response = await fetch('http://localhost:5000/api/start-run');
       const data = await response.json();
-      setHeroState(data.hero);
+      const storedHeroProgression = readStoredHeroProgression();
+      setHeroState(mergeHeroState(data.hero, storedHeroProgression));
       setEncounters(data.run_encounters);
       // Initialize all learned moves with default moves
       const moveIds = data.hero.equipped_moves.map(m => m.id);
@@ -35,6 +76,18 @@ function App() {
       console.error("Failed to fetch game data:", error);
     }
   };
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !heroState) {
+      return;
+    }
+
+    try {
+      window.localStorage.setItem(HERO_PROGRESS_STORAGE_KEY, JSON.stringify(heroState));
+    } catch (error) {
+      console.error('Failed to store hero progression:', error);
+    }
+  }, [heroState]);
 
   const handleEnterBattle = (monsterData) => {
     setActiveMonster(monsterData);
@@ -107,6 +160,29 @@ function App() {
     });
   };
 
+  const handleUpgradeStat = (statKey) => {
+    setHeroState(prevHero => {
+      if (!prevHero || prevHero.current_xp < STAT_UPGRADE_COST) {
+        return prevHero;
+      }
+
+      const nextHero = {
+        ...prevHero,
+        current_xp: prevHero.current_xp - STAT_UPGRADE_COST,
+        [statKey]: (prevHero[statKey] ?? 0) + STAT_UPGRADE_AMOUNT
+      };
+
+      if (statKey === 'max_hp') {
+        nextHero.current_hp = Math.min(
+          (prevHero.current_hp ?? prevHero.max_hp ?? 0) + STAT_UPGRADE_AMOUNT,
+          nextHero.max_hp
+        );
+      }
+
+      return nextHero;
+    });
+  };
+
   return (
     <div>
       {currentScreen === 'menu' && (
@@ -121,6 +197,7 @@ function App() {
           allLearnedMovesDetails={allLearnedMovesDetails}
           onEnterBattle={handleEnterBattle}
           onSelectAbilities={handleSelectAbilities}
+          onUpgradeStat={handleUpgradeStat}
         />
       )}
 

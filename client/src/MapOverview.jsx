@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import './MapOverview.css';
 import forestMap from '../images/forest-map.png';
 import AbilitySelector from './AbilitySelector';
+import StatUpgradePanel from './StatUpgradePanel';
 
-const MapOverview = ({ encounters, heroState, allLearnedMoves, allLearnedMovesDetails, onEnterBattle, onSelectAbilities }) => {
+const MapOverview = ({ encounters, heroState, allLearnedMoves, allLearnedMovesDetails, onEnterBattle, onSelectAbilities, onUpgradeStat }) => {
   const [showAbilitySelector, setShowAbilitySelector] = useState(false);
 
   const handleSelectAbilities = (selectedMoveIds) => {
@@ -16,6 +17,8 @@ const MapOverview = ({ encounters, heroState, allLearnedMoves, allLearnedMovesDe
       <button className="ability-selector-btn" onClick={() => setShowAbilitySelector(true)}>
         ⚔️ Select Abilities
       </button>
+
+      <StatUpgradePanel heroState={heroState} onUpgradeStat={onUpgradeStat} />
 
       <div 
         className="game-board-wrapper" 
