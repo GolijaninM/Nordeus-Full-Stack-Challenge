@@ -11,7 +11,7 @@ const MapOverview = ({ encounters, onEnterBattle }) => {
         style={{ backgroundImage: `url(${forestMap})` }}
       >
         {encounters.map((encounter, index) => {
-          const isNext = encounter.status === 'next';
+          const isNext = encounter.status === 'next' || encounter.status === 'completed';
           const isLocked = encounter.status === 'locked';
 
           return (

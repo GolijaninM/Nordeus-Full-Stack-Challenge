@@ -102,6 +102,20 @@
   animation: pulseNode 2s infinite;
 }
 
+.level-node.completed {
+  background-color: #2ecc71; /* green for completed */
+  border: 3px solid #27ae60;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(46, 204, 113, 0.6), inset 0 0 8px rgba(39, 174, 96, 0.35);
+}
+
+.level-node.completed:hover {
+  transform: scale(1.05);
+  background-color: #27ae60;
+  box-shadow: 0 0 24px rgba(46, 204, 113, 0.9), inset 0 0 10px rgba(39, 174, 96, 0.5);
+}
+
 .level-node.next:hover {
   transform: scale(1.1);
   background-color: #c0392b;
