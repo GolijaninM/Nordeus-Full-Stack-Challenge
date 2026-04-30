@@ -7,10 +7,11 @@ const STAT_UPGRADE_AMOUNT = 5;
 const STAT_LABELS = {
   attack: 'Attack',
   defense: 'Defense',
-  max_hp: 'Max Health'
+  max_hp: 'Max Health',
+  magic: 'Magic'
 };
 
-const STAT_KEYS = ['attack', 'defense', 'max_hp'];
+const STAT_KEYS = ['attack', 'defense', 'magic', 'max_hp'];
 
 const StatUpgradePanel = ({ heroState, onUpgradeStat }) => {
   const availableXp = heroState?.current_xp ?? 0;
