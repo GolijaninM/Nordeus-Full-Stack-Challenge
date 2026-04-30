@@ -34,8 +34,11 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
   const [monsterMagDuration, setMonsterMagDuration] = useState(0);
   
   const [combatLog, setCombatLog] = useState(`A wild ${monster.name} appears!`);
+  const [hoveredMove, setHoveredMove] = useState(null);
   
   const [isProcessing, setIsProcessing] = useState(false);
+
+  const getMoveIconSrc = (moveId) => `/images/moves/${moveId}.png`;
 
   const decrementStatDurations = () => {
     setHeroAtkDuration(prev => Math.max(0, prev - 1));
@@ -204,12 +207,28 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
                 style={{ '--position': index }}
                 onClick={() => handleMoveSelect(move.id)}
                 disabled={isProcessing}
-                title={move.name}
+                onMouseEnter={() => {
+                  setHoveredMove(move);
+                }}
+                onMouseLeave={() => {
+                  setHoveredMove(null);
+                }}
+                title={move.description || move.name}
+                aria-label={`${move.name}: ${move.description || 'No description available'}`}
               >
-                <span className="move-name">{move.name}</span>
+                <img className="move-icon" src={getMoveIconSrc(move.id)} alt="" aria-hidden="true" />
               </button>
             ))}
           </div>
+
+          {hoveredMove && (
+            <div className="move-hover-card" aria-live="polite">
+              <div className="move-hover-card-name">{hoveredMove.name}</div>
+              <div className="move-hover-card-description">
+                {hoveredMove.description || 'No description available.'}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

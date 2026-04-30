@@ -112,6 +112,7 @@
   top: -100px;
   left: 50%;
   transform: translateX(-50%);
+  overflow: visible;
 }
 
 .move-button.circular {
@@ -131,6 +132,7 @@
   border: 2px solid #34495e;
   background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
   color: white;
+  overflow: hidden;
 }
 
 .move-button.circular:not(:disabled):hover {
@@ -144,9 +146,48 @@
   opacity: 0.6;
 }
 
-.move-name {
-  display: block;
-  line-height: 1.1;
+.move-icon {
+  position: absolute;
+  inset: 6px;
+  width: calc(100% - 12px);
+  height: calc(100% - 12px);
+  object-fit: contain;
+  image-rendering: pixelated;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.move-hover-card {
+  position: absolute;
+  left: calc(100% + 16px);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 220px;
+  min-height: 84px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(10, 14, 20, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(6px);
+  color: #f5f7fa;
+  text-align: center;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.move-hover-card-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.move-hover-card-description {
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: #d7dde5;
 }
 
 /* Position 4 buttons in a circle (top, right, bottom, left) */
