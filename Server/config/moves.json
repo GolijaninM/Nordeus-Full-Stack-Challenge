@@ -3,7 +3,8 @@
     "name": "Slash",
     "type": "physical",
     "effect": "damage",
-    "base_value": 15
+    "base_value": 15,
+    "description": "Deals moderate physical damage. Scales with Attack and is reduced by target's Defense."
   },
   "shield_up": {
     "name": "Shield Up",
@@ -11,7 +12,8 @@
     "effect": "buff",
     "target_stat": "defense",
     "stat_change": 5,
-    "duration": 2
+    "duration": 2,
+    "description": "Raises the user's Defense by 5 for two turns."
   },
   "battle_cry": {
     "name": "Battle Cry",
@@ -19,25 +21,29 @@
     "effect": "buff",
     "target_stat": "attack",
     "stat_change": 5,
-    "duration": 2
+    "duration": 2,
+    "description": "Raises the user's Attack by 5 for two turns."
   },
   "second_wind": {
     "name": "Second Wind",
     "type": "magic",
     "effect": "heal",
-    "base_value": 20
+    "base_value": 20,
+    "description": "Heals the user for 20 base HP. Scales with Magic."
   },
   "shadow_bolt": {
     "name": "Shadow Bolt",
     "type": "magic",
     "effect": "damage",
-    "base_value": 25
+    "base_value": 25,
+    "description": "Deals heavy magic damage. Scales with Magic and bypasses Defense entirely."
   },
   "drain_life": {
     "name": "Drain Life",
     "type": "magic",
     "effect": "lifesteal",
-    "base_value": 10
+    "base_value": 10,
+    "description": "Deals light magic damage and heals the user for the same amount. Scales with Magic."
   },
   "curse": {
     "name": "Curse",
@@ -45,7 +51,8 @@
     "effect": "debuff",
     "target_stat": "attack",
     "stat_change": 5,
-    "duration": 2
+    "duration": 2,
+    "description": "Lowers the target's Attack by 5 for two turns."
   },
   "dark_pact": {
     "name": "Dark Pact",
@@ -54,13 +61,15 @@
     "target_stat": "magic",
     "stat_change": 5,
     "cost_hp": 15,
-    "duration": 2
+    "duration": 2,
+    "description": "Raises the user's Magic by 5 for two turns at the cost of 15 HP."
   },
   "bite": {
     "name": "Bite",
     "type": "physical",
     "effect": "damage",
-    "base_value": 15
+    "base_value": 15,
+    "description": "Deals moderate physical damage. Scales with Attack and is reduced by Defense."
   },
   "web_throw": {
     "name": "Web Throw",
@@ -69,13 +78,15 @@
     "base_value": 5,
     "target_stat": "defense",
     "stat_change": 5,
-    "duration": 2
+    "duration": 2,
+    "description": "Deals light physical damage and lowers the target's Defense by 5 for two turns. Scales with Attack."
   },
   "pounce": {
     "name": "Pounce",
     "type": "physical",
     "effect": "damage",
-    "base_value": 25
+    "base_value": 25,
+    "description": "Deals heavy physical damage. Scales with Attack and is reduced by Defense."
   },
   "skitter": {
     "name": "Skitter",
@@ -83,19 +94,22 @@
     "effect": "buff",
     "target_stat": "defense",
     "stat_change": 5,
-    "duration": 2
+    "duration": 2,
+    "description": "Raises the user's Defense by 5 for two turns."
   },
   "flame_breath": {
     "name": "Flame Breath",
     "type": "magic",
     "effect": "damage",
-    "base_value": 30
+    "base_value": 30,
+    "description": "Deals heavy magic damage. Scales with Magic and bypasses Defense entirely."
   },
   "claw_swipe": {
     "name": "Claw Swipe",
     "type": "physical",
     "effect": "damage",
-    "base_value": 20
+    "base_value": 20,
+    "description": "Deals moderate physical damage. Scales with Attack and is reduced by Defense."
   },
   "intimidate": {
     "name": "Intimidate",
@@ -103,7 +117,8 @@
     "effect": "debuff",
     "target_stat": "attack",
     "stat_change": 5,
-    "duration": 2
+    "duration": 2,
+    "description": "Lowers the target's Attack by 5 for two turns."
   },
   "dragon_scales": {
     "name": "Dragon Scales",
@@ -111,13 +126,15 @@
     "effect": "buff",
     "target_stat": "defense",
     "stat_change": 5,
-    "duration": 2
+    "duration": 2,
+    "description": "Raises the user's Defense by 5 for two turns."
   },
   "rusty_blade": {
     "name": "Rusty Blade",
     "type": "physical",
     "effect": "damage",
-    "base_value": 12
+    "base_value": 12,
+    "description": "Deals moderate physical damage. Scales with Attack and is reduced by Defense."
   },
   "dirty_kick": {
     "name": "Dirty Kick",
@@ -126,7 +143,8 @@
     "base_value": 5,
     "target_stat": "defense",
     "stat_change": 5,
-    "duration": 2
+    "duration": 2,
+    "description": "Deals light physical damage and lowers the target's Defense by 5 for two turns. Scales with Attack."
   },
   "frenzy": {
     "name": "Frenzy",
@@ -134,19 +152,22 @@
     "effect": "buff",
     "target_stat": "attack",
     "stat_change": 5,
-    "duration": 2
+    "duration": 2,
+    "description": "Raises the user's Attack by 5 for two turns."
   },
   "headbutt": {
     "name": "Headbutt",
     "type": "physical",
     "effect": "damage",
-    "base_value": 20
+    "base_value": 20,
+    "description": "Deals heavy physical damage. Scales with Attack and is reduced by Defense."
   },
   "firebolt": {
     "name": "Firebolt",
     "type": "magic",
     "effect": "damage",
-    "base_value": 18
+    "base_value": 18,
+    "description": "Deals moderate magic damage. Scales with Magic and bypasses Defense entirely."
   },
   "arcane_surge": {
     "name": "Arcane Surge",
@@ -154,7 +175,8 @@
     "effect": "buff",
     "target_stat": "magic",
     "stat_change": 5,
-    "duration": 2
+    "duration": 2,
+    "description": "Raises the user's Magic by 5 for two turns."
   },
   "mana_drain": {
     "name": "Mana Drain",
@@ -163,7 +185,8 @@
     "base_value": 8,
     "target_stat": "magic",
     "stat_change": 5,
-    "duration": 2
+    "duration": 2,
+    "description": "Deals light magic damage and lowers the target's Magic by 5 for two turns. Scales with Magic."
   },
   "hex_shield": {
     "name": "Hex Shield",
@@ -171,6 +194,7 @@
     "effect": "buff",
     "target_stat": "defense",
     "stat_change": 5,
-    "duration": 2
+    "duration": 2,
+    "description": "Raises the user's Defense by 5 for two turns."
   }
 }
