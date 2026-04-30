@@ -95,9 +95,65 @@
   filter: image-rendering pixelated;
 }
 
+.character-sprite.is-hit {
+  animation: hit-bounce 0.32s ease-out;
+}
+
+@keyframes hit-bounce {
+  0% {
+    transform: scale(6) translateX(0) translateY(0);
+    filter: brightness(1);
+  }
+  20% {
+    transform: scale(6) translateX(-2px) translateY(-2px);
+    filter: brightness(1.35) saturate(1.2);
+  }
+  40% {
+    transform: scale(6) translateX(2px) translateY(-1px);
+  }
+  60% {
+    transform: scale(6) translateX(-2px) translateY(0);
+  }
+  80% {
+    transform: scale(6) translateX(1px) translateY(0);
+  }
+  100% {
+    transform: scale(6) translateX(0) translateY(0);
+    filter: brightness(1);
+  }
+}
+
 .hero-sprite {
   margin-bottom: 0;
   transform: scale(6) scaleX(-1);
+}
+
+.hero-sprite.is-hit {
+  animation: hero-hit-bounce 0.32s ease-out;
+}
+
+@keyframes hero-hit-bounce {
+  0% {
+    transform: scale(6) scaleX(-1) translateX(0) translateY(0);
+    filter: brightness(1);
+  }
+  20% {
+    transform: scale(6) scaleX(-1) translateX(4px) translateY(-2px);
+    filter: brightness(1.35) saturate(1.2);
+  }
+  40% {
+    transform: scale(6) scaleX(-1) translateX(-4px) translateY(-1px);
+  }
+  60% {
+    transform: scale(6) scaleX(-1) translateX(3px) translateY(0);
+  }
+  80% {
+    transform: scale(6) scaleX(-1) translateX(-2px) translateY(0);
+  }
+  100% {
+    transform: scale(6) scaleX(-1) translateX(0) translateY(0);
+    filter: brightness(1);
+  }
 }
 
 .monster-sprite {

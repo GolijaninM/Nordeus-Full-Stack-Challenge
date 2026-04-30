@@ -35,10 +35,17 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
   
   const [combatLog, setCombatLog] = useState(`A wild ${monster.name} appears!`);
   const [hoveredMove, setHoveredMove] = useState(null);
+  const [heroHit, setHeroHit] = useState(false);
+  const [monsterHit, setMonsterHit] = useState(false);
   
   const [isProcessing, setIsProcessing] = useState(false);
 
   const getMoveIconSrc = (moveId) => `/images/moves/${moveId}.png`;
+
+  const triggerHitAnimation = (setHitState) => {
+    setHitState(true);
+    setTimeout(() => setHitState(false), 320);
+  };
 
   const decrementStatDurations = () => {
     setHeroAtkDuration(prev => Math.max(0, prev - 1));
@@ -88,6 +95,9 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
       setMonsterAtk(data.monster_state.attack);
       setMonsterDef(data.monster_state.defense);
       setMonsterMag(data.monster_state.magic);
+      if (data.hero_damage > 0) {
+        triggerHitAnimation(setMonsterHit);
+      }
 
 
       // Update stat change durations based on stat changes in response
@@ -116,6 +126,9 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
         setTimeout(() => {
           // Display the monster's counterattack
           setHeroHp(data.hero_state.hp);
+          if (data.monster_damage > 0) {
+            triggerHitAnimation(setHeroHit);
+          }
           setCombatLog(`${monster.name} used ${data.monster_move} and dealt ${data.monster_damage} damage!`);
           
           setIsProcessing(false);
@@ -165,7 +178,7 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
             </div>
             <p className="hp-text">{monsterHp} / {monsterMaxHp} HP</p>
           </div>
-          <div className="character-sprite monster-sprite">
+          <div className={`character-sprite monster-sprite ${monsterHit ? 'is-hit' : ''}`}>
             {monster.id === "goblin_warrior" && (
                 <LogicalCropImage src="/images/monsters.png" cropCoords={{ sx: 7*32, sy: 0, sWidth: 32, sHeight: 32 }} />
             )}
@@ -194,7 +207,7 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
             <p className="hp-text">{heroHp} / {heroMaxHp} HP</p>
           </div>
           
-          <div className="character-sprite hero-sprite">
+          <div className={`character-sprite hero-sprite ${heroHit ? 'is-hit' : ''}`}>
             <LogicalCropImage src="/images/rogues.png" cropCoords={{ sx: 0, sy: 32, sWidth: 32, sHeight: 32 }} />
           </div>
 
