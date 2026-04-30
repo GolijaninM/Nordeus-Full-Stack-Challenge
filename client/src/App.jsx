@@ -102,21 +102,23 @@ function App() {
   const handleCloseResult = () => {
     if (battleResultData.won) {
       const newMove = battleResultData.newMove;
-      const newMoveId = newMove.id;
+      if (newMove && newMove.id) {
+        const newMoveId = newMove.id;
 
-      // Add learned move to all learned moves if not already there
-      setAllLearnedMoves(prevMoves => {
-        if (!prevMoves.includes(newMoveId)) {
-          return [...prevMoves, newMoveId];
-        }
-        return prevMoves;
-      });
+        // Add learned move to all learned moves if not already there
+        setAllLearnedMoves(prevMoves => {
+          if (!prevMoves.includes(newMoveId)) {
+            return [...prevMoves, newMoveId];
+          }
+          return prevMoves;
+        });
 
-      // Store full details of the new learned move
-      setAllLearnedMovesDetails(prevDetails => ({
-        ...prevDetails,
-        [newMoveId]: newMove
-      }));
+        // Store full details of the new learned move
+        setAllLearnedMovesDetails(prevDetails => ({
+          ...prevDetails,
+          [newMoveId]: newMove
+        }));
+      }
 
       // Update hero state - add XP but DON'T auto-equip the new move
       setHeroState(prevHero => {
@@ -129,14 +131,17 @@ function App() {
       setEncounters(prevMap => {
         const newMap = [...prevMap];
         const monsterIndex = newMap.findIndex(m => m.id === battleResultData.monster.id);
-        
-        // Mark current as completed
-        newMap[monsterIndex].status = 'completed';
-        
-        // Unlock the next one if it exists
-        if (monsterIndex + 1 < newMap.length & newMap[monsterIndex + 1].status === 'locked') {
-          newMap[monsterIndex + 1].status = 'next';
+
+        if (monsterIndex >= 0 && monsterIndex < newMap.length) {
+          // Mark current as completed
+          newMap[monsterIndex].status = 'completed';
+
+          // Unlock the next one if it exists and is locked
+          if (monsterIndex + 1 < newMap.length && newMap[monsterIndex + 1].status === 'locked') {
+            newMap[monsterIndex + 1].status = 'next';
+          }
         }
+
         return newMap;
       });
     }
