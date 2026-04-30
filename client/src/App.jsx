@@ -57,8 +57,7 @@ function App() {
     try {
       const response = await fetch('http://localhost:5000/api/start-run');
       const data = await response.json();
-      const storedHeroProgression = readStoredHeroProgression();
-      setHeroState(mergeHeroState(data.hero, storedHeroProgression));
+      setHeroState(data.hero);
       setEncounters(data.run_encounters);
       // Initialize all learned moves with default moves
       const moveIds = data.hero.equipped_moves.map(m => m.id);
