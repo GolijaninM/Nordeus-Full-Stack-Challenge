@@ -48,7 +48,7 @@
   border-radius: 8px;
   border: 2px solid #555;
   min-width: 160px;
-  margin-bottom: 110px;
+  margin-bottom: 125px;
 }
 
 .hud h3 {
@@ -90,14 +90,14 @@
 /* Characters - on the ground */
 .character-sprite {
   position: relative;
-  bottom: 30px;
-  transform: scale(5);
+  bottom: 35px;
+  transform: scale(6);
   filter: image-rendering pixelated;
 }
 
 .hero-sprite {
   margin-bottom: 0;
-  transform: scale(5) scaleX(-1);
+  transform: scale(6) scaleX(-1);
 }
 
 .monster-sprite {
@@ -107,9 +107,9 @@
 /* Circular ability buttons around hero */
 .circular-moves {
   position: absolute;
-  width: 240px;
-  height: 240px;
-  top: -100px;
+  width: 200px;
+  height: 200px;
+  top: -80px;
   left: 50%;
   transform: translateX(-50%);
   overflow: visible;
@@ -117,8 +117,8 @@
 
 .move-button.circular {
   position: absolute;
-  width: 65px;
-  height: 65px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -254,8 +254,9 @@
   display: flex;
   flex-direction: row-reverse;
   justify-content: space-between;
+  gap: 100px;
   align-items: flex-end;
-  padding: 40px;
+  padding: 40px 100px;
   order: 1;
 }
 
