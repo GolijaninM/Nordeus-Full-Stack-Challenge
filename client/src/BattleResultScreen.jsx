@@ -2,7 +2,7 @@ import React from 'react';
 import './BattleResultScreen.css';
 
 const BattleResultScreen = ({ resultData, onContinue }) => {
-  const { won, monster, xp, newMove } = resultData;
+  const { won, monster, xp, coinsEarned, newMove } = resultData;
 
   return (
     <div className="result-screen-container">
@@ -23,6 +23,11 @@ const BattleResultScreen = ({ resultData, onContinue }) => {
             <div className="reward-item">
               <span className="reward-label">XP Gained:</span>
               <span className="reward-value xp-text">+{xp} XP</span>
+            </div>
+
+            <div className="reward-item">
+              <span className="reward-label">Coins Earned:</span>
+              <span className="reward-value coins-text">+{coinsEarned} 💰</span>
             </div>
             
             <div className="reward-item">

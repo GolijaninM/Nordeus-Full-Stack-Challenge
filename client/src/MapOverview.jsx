@@ -3,9 +3,11 @@ import './MapOverview.css';
 import forestMap from '../images/forest-map.png';
 import AbilitySelector from './AbilitySelector';
 import StatUpgradePanel from './StatUpgradePanel';
+import Shop from './Shop';
 
-const MapOverview = ({ encounters, heroState, allLearnedMoves, allLearnedMovesDetails, onEnterBattle, onSelectAbilities, onUpgradeStat }) => {
+const MapOverview = ({ encounters, heroState, allLearnedMoves, allLearnedMovesDetails, onEnterBattle, onSelectAbilities, onUpgradeStat, onBuySkin, onEquipSkin }) => {
   const [showAbilitySelector, setShowAbilitySelector] = useState(false);
+  const [showShop, setShowShop] = useState(false);
 
   const handleSelectAbilities = (selectedMoveIds) => {
     onSelectAbilities(selectedMoveIds);
@@ -16,6 +18,11 @@ const MapOverview = ({ encounters, heroState, allLearnedMoves, allLearnedMovesDe
       {/* Ability Selector Button */}
       <button className="ability-selector-btn" onClick={() => setShowAbilitySelector(true)}>
         ⚔️ Select Abilities
+      </button>
+
+      {/* Shop Button */}
+      <button className="shop-btn" onClick={() => setShowShop(true)}>
+        🛍️ Shop
       </button>
 
       <StatUpgradePanel heroState={heroState} onUpgradeStat={onUpgradeStat} />
@@ -59,6 +66,16 @@ const MapOverview = ({ encounters, heroState, allLearnedMoves, allLearnedMovesDe
           allLearnedMovesDetails={allLearnedMovesDetails}
           onClose={() => setShowAbilitySelector(false)}
           onConfirm={handleSelectAbilities}
+        />
+      )}
+
+      {/* Shop Modal */}
+      {showShop && heroState && (
+        <Shop
+          heroState={heroState}
+          onBuySkin={onBuySkin}
+          onEquipSkin={onEquipSkin}
+          onClose={() => setShowShop(false)}
         />
       )}
     </div>

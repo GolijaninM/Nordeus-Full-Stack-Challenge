@@ -20,7 +20,6 @@ const StatUpgradePanel = ({ heroState, onUpgradeStat }) => {
     <div className="stat-upgrade-panel">
       <div className="stat-upgrade-header">
         <div>
-          <p className="stat-upgrade-kicker">Client Progression</p>
           <h2>Stat Upgrades</h2>
         </div>
         <div className="stat-upgrade-xp">

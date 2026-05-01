@@ -35,6 +35,9 @@ const mergeHeroState = (baseHero, storedHero) => {
     defense: storedHero.defense ?? baseHero.defense,
     magic: storedHero.magic ?? baseHero.magic,
     max_hp: storedHero.max_hp ?? baseHero.max_hp,
+    coins: storedHero.coins ?? baseHero.coins ?? 0,
+    current_skin: storedHero.current_skin ?? baseHero.current_skin ?? 'knight_default',
+    available_skins: baseHero.available_skins,
     equipped_moves: baseHero.equipped_moves
   };
 
@@ -94,8 +97,18 @@ function App() {
   };
 
   const handleBattleEnd = (resultData) => {
+    // Calculate coins reward based on monster health: max = health/3
+    let coinsReward = 0;
+    if (resultData.won) {
+      const maxCoins = Math.floor(resultData.monster.max_hp / 2);
+      coinsReward = Math.floor(Math.random() * maxCoins) + 1;
+    }
+    
     // Save the outcome and switch to the result screen
-    setBattleResultData(resultData);
+    setBattleResultData({
+      ...resultData,
+      coinsEarned: coinsReward
+    });
     setCurrentScreen('result');
   };
 
@@ -120,11 +133,15 @@ function App() {
         }));
       }
 
-      // Update hero state - add XP but DON'T auto-equip the new move
+      // Use coinsEarned from battleResultData (calculated in handleBattleEnd)
+      const coinsReward = battleResultData.coinsEarned ?? 0;
+
+      // Update hero state - add XP and coins
       setHeroState(prevHero => {
         return {
           ...prevHero,
-          current_xp: prevHero.current_xp + battleResultData.xp
+          current_xp: prevHero.current_xp + battleResultData.xp,
+          coins: (prevHero.coins ?? 0) + coinsReward
         };
       });
 
@@ -187,6 +204,44 @@ function App() {
     });
   };
 
+  const handleBuySkin = (skinId) => {
+    setHeroState(prevHero => {
+      if (!prevHero) return prevHero;
+      
+      const skin = prevHero.available_skins?.[skinId];
+      if (!skin || (prevHero.coins ?? 0) < skin.cost) {
+        return prevHero; // Not enough coins
+      }
+
+      // Deduct coins and unlock skin
+      const updatedSkins = { ...prevHero.available_skins };
+      updatedSkins[skinId] = { ...skin, unlocked: true };
+
+      return {
+        ...prevHero,
+        coins: prevHero.coins - skin.cost,
+        available_skins: updatedSkins,
+        current_skin: skinId // Auto-equip the purchased skin
+      };
+    });
+  };
+
+  const handleEquipSkin = (skinId) => {
+    setHeroState(prevHero => {
+      if (!prevHero) return prevHero;
+      
+      const skin = prevHero.available_skins?.[skinId];
+      if (!skin || !skin.unlocked) {
+        return prevHero; // Skin not available
+      }
+
+      return {
+        ...prevHero,
+        current_skin: skinId
+      };
+    });
+  };
+
   return (
     <div>
       {currentScreen === 'menu' && (
@@ -202,6 +257,8 @@ function App() {
           onEnterBattle={handleEnterBattle}
           onSelectAbilities={handleSelectAbilities}
           onUpgradeStat={handleUpgradeStat}
+          onBuySkin={handleBuySkin}
+          onEquipSkin={handleEquipSkin}
         />
       )}
 

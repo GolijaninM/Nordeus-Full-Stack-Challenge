@@ -216,6 +216,9 @@ def start_run():
         "attack": base_hero.get("attack", 10),
         "defense": base_hero.get("defense", 8),
         "magic": base_hero.get("magic", 5),
+        "coins": base_hero.get("coins", 0),
+        "current_skin": base_hero.get("current_skin", "knight_default"),
+        "available_skins": base_hero.get("available_skins", {}),
         "equipped_moves": equipped_moves
     }
 

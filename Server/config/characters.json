@@ -6,7 +6,16 @@
     "attack": 10,
     "defense": 8,
     "magic": 5,
-    "default_moves": ["slash", "shield_up", "battle_cry", "second_wind"]
+    "default_moves": ["slash", "shield_up", "battle_cry", "second_wind"],
+    "coins": 0,
+    "current_skin": "knight_default",
+    "available_skins": {
+      "knight_default": { "name": "Knight", "cost": 0, "unlocked": true, "coords": [0, 32] },
+      "knight_rogue": { "name": "Rogue Knight", "cost": 50, "unlocked": false, "coords": [0, 0] },
+      "knight_assassin": { "name": "Assassin", "cost": 100, "unlocked": false, "coords": [96, 0] },
+      "knight_ranger": { "name": "Ranger Knight", "cost": 75, "unlocked": false, "coords": [128, 32] },
+      "knight_shadow": { "name": "Shadow Knight", "cost": 120, "unlocked": false, "coords": [32, 96] }
+    }
   },
   "monsters": [
     {

@@ -208,7 +208,19 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
           </div>
           
           <div className={`character-sprite hero-sprite ${heroHit ? 'is-hit' : ''}`}>
-            <LogicalCropImage src="/images/rogues.png" cropCoords={{ sx: 0, sy: 32, sWidth: 32, sHeight: 32 }} />
+            {hero.available_skins && hero.current_skin && hero.available_skins[hero.current_skin] ? (
+              <LogicalCropImage 
+                src="/images/rogues.png" 
+                cropCoords={{ 
+                  sx: hero.available_skins[hero.current_skin].coords[0], 
+                  sy: hero.available_skins[hero.current_skin].coords[1], 
+                  sWidth: 32, 
+                  sHeight: 32 
+                }} 
+              />
+            ) : (
+              <LogicalCropImage src="/images/rogues.png" cropCoords={{ sx: 0, sy: 96, sWidth: 32, sHeight: 32 }} />
+            )}
           </div>
 
           {/* Circular ability buttons around hero */}
