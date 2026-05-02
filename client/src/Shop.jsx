@@ -1,6 +1,6 @@
 import React from 'react';
 import './Shop.css';
-import roguesImage from '../images/rogues.png';
+import roguesImage from '../images/characters/rogues.png';
 import LogicalCropImage from './LogicalCropImage';
 
 const Shop = ({ heroState, onBuySkin, onEquipSkin, onClose }) => {

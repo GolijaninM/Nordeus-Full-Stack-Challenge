@@ -180,19 +180,19 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
           </div>
           <div className={`character-sprite monster-sprite ${monsterHit ? 'is-hit' : ''}`}>
             {monster.id === "goblin_warrior" && (
-              <LogicalCropImage src="/images/monsters.png" cropCoords={{ sx: 7 * 32, sy: 0, sWidth: 32, sHeight: 32 }} />
+              <LogicalCropImage src="/images/characters/monsters.png" cropCoords={{ sx: 7 * 32, sy: 0, sWidth: 32, sHeight: 32 }} />
             )}
             {monster.id === "goblin_mage" && (
-              <LogicalCropImage src="/images/monsters.png" cropCoords={{ sx: 6 * 32, sy: 0, sWidth: 32, sHeight: 32 }} />
+              <LogicalCropImage src="/images/characters/monsters.png" cropCoords={{ sx: 6 * 32, sy: 0, sWidth: 32, sHeight: 32 }} />
             )}
             {monster.id === "giant_spider" && (
-              <LogicalCropImage src="/images/monsters.png" cropCoords={{ sx: 8 * 32, sy: 6 * 32, sWidth: 32, sHeight: 32 }} />
+              <LogicalCropImage src="/images/characters/monsters.png" cropCoords={{ sx: 8 * 32, sy: 6 * 32, sWidth: 32, sHeight: 32 }} />
             )}
             {monster.id === "witch" && (
-              <LogicalCropImage src="/images/monsters.png" cropCoords={{ sx: 4 * 32, sy: 5 * 32, sWidth: 32, sHeight: 32 }} />
+              <LogicalCropImage src="/images/characters/monsters.png" cropCoords={{ sx: 4 * 32, sy: 5 * 32, sWidth: 32, sHeight: 32 }} />
             )}
             {monster.id === "dragon" && (
-              <LogicalCropImage src="/images/monsters.png" cropCoords={{ sx: 2 * 32, sy: 8 * 32, sWidth: 32, sHeight: 32 }} />
+              <LogicalCropImage src="/images/characters/monsters.png" cropCoords={{ sx: 2 * 32, sy: 8 * 32, sWidth: 32, sHeight: 32 }} />
             )}
           </div>
         </div>
@@ -210,7 +210,7 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
           <div className={`character-sprite hero-sprite ${heroHit ? 'is-hit' : ''}`}>
             {hero.available_skins && hero.current_skin && hero.available_skins[hero.current_skin] ? (
               <LogicalCropImage
-                src="/images/rogues.png"
+                src="/images/characters/rogues.png"
                 cropCoords={{
                   sx: hero.available_skins[hero.current_skin].coords[0],
                   sy: hero.available_skins[hero.current_skin].coords[1],
@@ -219,7 +219,7 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
                 }}
               />
             ) : (
-              <LogicalCropImage src="/images/rogues.png" cropCoords={{ sx: 0, sy: 96, sWidth: 32, sHeight: 32 }} />
+              <LogicalCropImage src="/images/characters/rogues.png" cropCoords={{ sx: 0, sy: 96, sWidth: 32, sHeight: 32 }} />
             )}
           </div>
 
