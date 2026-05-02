@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './BattleScreen.css';
-import combatField from '../images/combat-field.jpg'; 
+import combatField from '../images/combat-field.png';
 import LogicalCropImage from './LogicalCropImage';
 
 const BattleScreen = ({ hero, monster, onBattleEnd }) => {
@@ -18,7 +18,7 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
   const [heroAtkDuration, setHeroAtkDuration] = useState(0);
   const [heroDefDuration, setHeroDefDuration] = useState(0);
   const [heroMagDuration, setHeroMagDuration] = useState(0);
-  
+
   const [monsterHp, setMonsterHp] = useState(monster.max_hp);
   const [monsterMaxHp] = useState(monster.max_hp);
   const [monsterAtk, setMonsterAtk] = useState(monster.attack || 0);
@@ -32,12 +32,12 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
   const [monsterAtkDuration, setMonsterAtkDuration] = useState(0);
   const [monsterDefDuration, setMonsterDefDuration] = useState(0);
   const [monsterMagDuration, setMonsterMagDuration] = useState(0);
-  
+
   const [combatLog, setCombatLog] = useState(`A wild ${monster.name} appears!`);
   const [hoveredMove, setHoveredMove] = useState(null);
   const [heroHit, setHeroHit] = useState(false);
   const [monsterHit, setMonsterHit] = useState(false);
-  
+
   const [isProcessing, setIsProcessing] = useState(false);
 
   const getMoveIconSrc = (moveId) => `/images/moves/${moveId}.png`;
@@ -64,7 +64,7 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
     let currentHeroAtk = heroAtkDuration > 0 ? heroAtk : heroBaseAtk;
     let currentHeroDef = heroDefDuration > 0 ? heroDef : heroBaseDef;
     let currentHeroMag = heroMagDuration > 0 ? heroMag : heroBaseMag;
-    
+
     let currentMonsterAtk = monsterAtkDuration > 0 ? monsterAtk : monsterBaseAtk;
     let currentMonsterDef = monsterDefDuration > 0 ? monsterDef : monsterBaseDef;
     let currentMonsterMag = monsterMagDuration > 0 ? monsterMag : monsterBaseMag;
@@ -130,7 +130,7 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
             triggerHitAnimation(setHeroHit);
           }
           setCombatLog(`${monster.name} used ${data.monster_move} and dealt ${data.monster_damage} damage!`);
-          
+
           setIsProcessing(false);
         }, 1500);
       } else {
@@ -139,11 +139,11 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
           if (data.winner === 'hero') {
             setCombatLog(`Victory! ${monster.name} was defeated!`);
             setTimeout(() => {
-              onBattleEnd({ 
-                won: true, 
-                monster: monster, 
-                xp: data.xp_earned, 
-                newMove: data.learned_move 
+              onBattleEnd({
+                won: true,
+                monster: monster,
+                xp: data.xp_earned,
+                newMove: data.learned_move
               });
             }, 2000);
           } else {
@@ -163,12 +163,12 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
   const monsterHpPercent = Math.max(0, (monsterHp / monsterMaxHp) * 100);
 
   return (
-    <div 
-      className="battle-container" 
+    <div
+      className="battle-container"
       style={{ backgroundImage: `url(${combatField})` }}
     >
       <div className="battle-arena">
-        
+
         {/* Monster and Health Bar */}
         <div className="monster-container">
           <div className="hud monster-hud">
@@ -180,19 +180,19 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
           </div>
           <div className={`character-sprite monster-sprite ${monsterHit ? 'is-hit' : ''}`}>
             {monster.id === "goblin_warrior" && (
-                <LogicalCropImage src="/images/monsters.png" cropCoords={{ sx: 7*32, sy: 0, sWidth: 32, sHeight: 32 }} />
+              <LogicalCropImage src="/images/monsters.png" cropCoords={{ sx: 7 * 32, sy: 0, sWidth: 32, sHeight: 32 }} />
             )}
             {monster.id === "goblin_mage" && (
-                <LogicalCropImage src="/images/monsters.png" cropCoords={{ sx: 6*32, sy: 0, sWidth: 32, sHeight: 32 }} />
+              <LogicalCropImage src="/images/monsters.png" cropCoords={{ sx: 6 * 32, sy: 0, sWidth: 32, sHeight: 32 }} />
             )}
             {monster.id === "giant_spider" && (
-                <LogicalCropImage src="/images/monsters.png" cropCoords={{ sx: 8*32, sy: 6*32, sWidth: 32, sHeight: 32 }} />
+              <LogicalCropImage src="/images/monsters.png" cropCoords={{ sx: 8 * 32, sy: 6 * 32, sWidth: 32, sHeight: 32 }} />
             )}
             {monster.id === "witch" && (
-                <LogicalCropImage src="/images/monsters.png" cropCoords={{ sx: 4*32, sy: 5*32, sWidth: 32, sHeight: 32 }} />
+              <LogicalCropImage src="/images/monsters.png" cropCoords={{ sx: 4 * 32, sy: 5 * 32, sWidth: 32, sHeight: 32 }} />
             )}
             {monster.id === "dragon" && (
-                <LogicalCropImage src="/images/monsters.png" cropCoords={{ sx: 2*32, sy: 8*32, sWidth: 32, sHeight: 32 }} />
+              <LogicalCropImage src="/images/monsters.png" cropCoords={{ sx: 2 * 32, sy: 8 * 32, sWidth: 32, sHeight: 32 }} />
             )}
           </div>
         </div>
@@ -206,17 +206,17 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
             </div>
             <p className="hp-text">{heroHp} / {heroMaxHp} HP</p>
           </div>
-          
+
           <div className={`character-sprite hero-sprite ${heroHit ? 'is-hit' : ''}`}>
             {hero.available_skins && hero.current_skin && hero.available_skins[hero.current_skin] ? (
-              <LogicalCropImage 
-                src="/images/rogues.png" 
-                cropCoords={{ 
-                  sx: hero.available_skins[hero.current_skin].coords[0], 
-                  sy: hero.available_skins[hero.current_skin].coords[1], 
-                  sWidth: 32, 
-                  sHeight: 32 
-                }} 
+              <LogicalCropImage
+                src="/images/rogues.png"
+                cropCoords={{
+                  sx: hero.available_skins[hero.current_skin].coords[0],
+                  sy: hero.available_skins[hero.current_skin].coords[1],
+                  sWidth: 32,
+                  sHeight: 32
+                }}
               />
             ) : (
               <LogicalCropImage src="/images/rogues.png" cropCoords={{ sx: 0, sy: 96, sWidth: 32, sHeight: 32 }} />
@@ -226,8 +226,8 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
           {/* Circular ability buttons around hero */}
           <div className="circular-moves">
             {hero.equipped_moves.slice(0, 4).map((move, index) => (
-              <button 
-                key={move.id} 
+              <button
+                key={move.id}
                 className={`move-button circular ${move.type}`}
                 style={{ '--position': index }}
                 onClick={() => handleMoveSelect(move.id)}
