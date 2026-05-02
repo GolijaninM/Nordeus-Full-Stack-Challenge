@@ -1,9 +1,9 @@
 import React from 'react';
 import './Shop.css';
-import roguesImage from '../images/characters/rogues.png';
-import topElevenImage from '../images/characters/top-eleven.png';
-import golfRivalImage from '../images/characters/golf-rival.png';
-import LogicalCropImage from './LogicalCropImage';
+import roguesImage from '../../../assets/characters/rogues.png';
+import topElevenImage from '../../../assets/characters/top-eleven.png';
+import golfRivalImage from '../../../assets/characters/golf-rival.png';
+import LogicalCropImage from '../../../components/LogicalCropImage';
 
 const Shop = ({ heroState, onBuySkin, onEquipSkin, onClose }) => {
   if (!heroState || !heroState.available_skins) {

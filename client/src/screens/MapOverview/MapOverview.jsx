@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import './MapOverview.css';
-import forestMap from '../images/forest-map.png';
-import AbilitySelector from './AbilitySelector';
-import StatUpgradePanel from './StatUpgradePanel';
-import Shop from './Shop';
+import forestMap from '../../assets/forest-map.png';
+import AbilitySelector from './components/AbilitySelector';
+import StatUpgradePanel from './components/StatUpgradePanel';
+import Shop from './components/Shop';
 
 const MapOverview = ({ encounters, heroState, allLearnedMoves, allLearnedMovesDetails, onEnterBattle, onSelectAbilities, onUpgradeStat, onBuySkin, onEquipSkin }) => {
   const [showAbilitySelector, setShowAbilitySelector] = useState(false);

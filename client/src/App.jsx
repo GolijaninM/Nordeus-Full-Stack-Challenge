@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import MainMenu from './MainMenu';
-import MapOverview from './MapOverview';
-import BattleScreen from './BattleScreen';
-import BattleResultScreen from './BattleResultScreen';
+import MainMenu from './screens/MainMenu/MainMenu';
+import MapOverview from './screens/MapOverview/MapOverview';
+import BattleScreen from './screens/BattleScreen/BattleScreen';
+import BattleResultScreen from './screens/BattleScreen/BattleResultScreen';
 
 const HERO_PROGRESS_STORAGE_KEY = 'nordeus.heroProgression';
 const ENCOUNTERS_STORAGE_KEY = 'nordeus.encounters';

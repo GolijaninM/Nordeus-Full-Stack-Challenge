@@ -30,7 +30,7 @@ body,
   content: "";
   position: absolute;
   inset: -8%;
-  background-image: url("../images/main-menu.webp");
+  background-image: url("../../assets/main-menu.webp");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;

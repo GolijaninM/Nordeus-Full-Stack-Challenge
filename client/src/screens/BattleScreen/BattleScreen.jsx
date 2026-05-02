@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import './BattleScreen.css';
-import combatField from '../images/combat-field.png';
-import LogicalCropImage from './LogicalCropImage';
-import golfBall from '../images/secret items/Golf-ball.png';
-import footballBall from '../images/secret items/Football-ball.png';
-import topElevenImage from '../images/characters/top-eleven.png';
-import golfRivalImage from '../images/characters/golf-rival.png';
+import combatField from '../../assets/combat-field.png';
+import LogicalCropImage from '../../components/LogicalCropImage';
+import golfBall from '../../assets/secret items/Golf-ball.png';
+import footballBall from '../../assets/secret items/Football-ball.png';
+import topElevenImage from '../../assets/characters/top-eleven.png';
+import golfRivalImage from '../../assets/characters/golf-rival.png';
+import monstersSheet from '../../assets/characters/monsters.png';
+import roguesSheet from '../../assets/characters/rogues.png';
+import { getMoveIcon } from '../../utils/moveIcons';
 
 const BattleScreen = ({ hero, monster, onBattleEnd, onUnlockSkin }) => {
 
@@ -44,7 +47,7 @@ const BattleScreen = ({ hero, monster, onBattleEnd, onUnlockSkin }) => {
 
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const getMoveIconSrc = (moveId) => `/images/moves/${moveId}.png`;
+  const getMoveIconSrc = (moveId) => getMoveIcon(moveId);
 
   const triggerHitAnimation = (setHitState) => {
     setHitState(true);
@@ -189,19 +192,19 @@ const BattleScreen = ({ hero, monster, onBattleEnd, onUnlockSkin }) => {
           </div>
           <div className={`character-sprite monster-sprite ${monsterHit ? 'is-hit' : ''}`}>
             {monster.id === "goblin_warrior" && (
-              <LogicalCropImage src="/images/characters/monsters.png" cropCoords={{ sx: 7 * 32, sy: 0, sWidth: 32, sHeight: 32 }} />
+              <LogicalCropImage src={monstersSheet} cropCoords={{ sx: 7 * 32, sy: 0, sWidth: 32, sHeight: 32 }} />
             )}
             {monster.id === "goblin_mage" && (
-              <LogicalCropImage src="/images/characters/monsters.png" cropCoords={{ sx: 6 * 32, sy: 0, sWidth: 32, sHeight: 32 }} />
+              <LogicalCropImage src={monstersSheet} cropCoords={{ sx: 6 * 32, sy: 0, sWidth: 32, sHeight: 32 }} />
             )}
             {monster.id === "giant_spider" && (
-              <LogicalCropImage src="/images/characters/monsters.png" cropCoords={{ sx: 8 * 32, sy: 6 * 32, sWidth: 32, sHeight: 32 }} />
+              <LogicalCropImage src={monstersSheet} cropCoords={{ sx: 8 * 32, sy: 6 * 32, sWidth: 32, sHeight: 32 }} />
             )}
             {monster.id === "witch" && (
-              <LogicalCropImage src="/images/characters/monsters.png" cropCoords={{ sx: 4 * 32, sy: 5 * 32, sWidth: 32, sHeight: 32 }} />
+              <LogicalCropImage src={monstersSheet} cropCoords={{ sx: 4 * 32, sy: 5 * 32, sWidth: 32, sHeight: 32 }} />
             )}
             {monster.id === "dragon" && (
-              <LogicalCropImage src="/images/characters/monsters.png" cropCoords={{ sx: 2 * 32, sy: 8 * 32, sWidth: 32, sHeight: 32 }} />
+              <LogicalCropImage src={monstersSheet} cropCoords={{ sx: 2 * 32, sy: 8 * 32, sWidth: 32, sHeight: 32 }} />
             )}
           </div>
         </div>
@@ -226,7 +229,7 @@ const BattleScreen = ({ hero, monster, onBattleEnd, onUnlockSkin }) => {
               />
             ) : hero.available_skins && hero.current_skin && hero.available_skins[hero.current_skin] ? (
               <LogicalCropImage
-                src="/images/characters/rogues.png"
+                src={roguesSheet}
                 cropCoords={{
                   sx: hero.available_skins[hero.current_skin].coords[0],
                   sy: hero.available_skins[hero.current_skin].coords[1],
@@ -235,7 +238,7 @@ const BattleScreen = ({ hero, monster, onBattleEnd, onUnlockSkin }) => {
                 }}
               />
             ) : (
-              <LogicalCropImage src="/images/characters/rogues.png" cropCoords={{ sx: 0, sy: 96, sWidth: 32, sHeight: 32 }} />
+              <LogicalCropImage src={roguesSheet} cropCoords={{ sx: 0, sy: 96, sWidth: 32, sHeight: 32 }} />
             )}
           </div>
 
