@@ -376,21 +376,24 @@
 /* Secret collectible balls */
 .secret-ball {
   position: absolute;
-  width: 56px;
-  height: 56px;
+
   cursor: pointer;
   z-index: 4;
   transition: transform 160ms ease, opacity 200ms ease;
 }
 
 .golf-ball {
-  right: 220px;
-  bottom: 180px;
+  width: 20px;
+  height: 20px;
+  left: 99%;
+  bottom: 0px;
 }
 
 .football-ball {
-  left: 220px;
-  bottom: 180px;
+  width: 60px;
+  height: 60px;
+  left: 0px;
+  bottom: 0px;
 }
 
 .secret-ball:hover {
