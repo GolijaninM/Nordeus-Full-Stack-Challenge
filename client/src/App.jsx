@@ -5,8 +5,13 @@ import BattleScreen from './BattleScreen';
 import BattleResultScreen from './BattleResultScreen';
 
 const HERO_PROGRESS_STORAGE_KEY = 'nordeus.heroProgression';
-const STAT_UPGRADE_COST = 20;
+const BASE_STAT_UPGRADE_COST = 20;
 const STAT_UPGRADE_AMOUNT = 5;
+const STAT_UPGRADE_COST_INCREMENT = 5;
+
+const calculateUpgradeCost = (upgradeCount) => {
+  return BASE_STAT_UPGRADE_COST + (upgradeCount * STAT_UPGRADE_COST_INCREMENT);
+};
 
 const readStoredHeroProgression = () => {
   if (typeof window === 'undefined') {
@@ -24,7 +29,16 @@ const readStoredHeroProgression = () => {
 
 const mergeHeroState = (baseHero, storedHero) => {
   if (!storedHero) {
-    return baseHero;
+    return {
+      ...baseHero,
+      current_hp: baseHero.max_hp,
+      stat_upgrades: {
+        attack: 0,
+        defense: 0,
+        magic: 0,
+        max_hp: 0
+      }
+    };
   }
 
   const mergedHero = {
@@ -38,7 +52,13 @@ const mergeHeroState = (baseHero, storedHero) => {
     coins: storedHero.coins ?? baseHero.coins ?? 0,
     current_skin: storedHero.current_skin ?? baseHero.current_skin ?? 'knight_default',
     available_skins: baseHero.available_skins,
-    equipped_moves: baseHero.equipped_moves
+    equipped_moves: baseHero.equipped_moves,
+    stat_upgrades: storedHero.stat_upgrades ?? {
+      attack: 0,
+      defense: 0,
+      magic: 0,
+      max_hp: 0
+    }
   };
 
   return {
@@ -183,14 +203,23 @@ function App() {
 
   const handleUpgradeStat = (statKey) => {
     setHeroState(prevHero => {
-      if (!prevHero || prevHero.current_xp < STAT_UPGRADE_COST) {
+      if (!prevHero) return prevHero;
+
+      const upgradeCount = prevHero.stat_upgrades?.[statKey] ?? 0;
+      const upgradeCost = calculateUpgradeCost(upgradeCount);
+
+      if (prevHero.current_xp < upgradeCost) {
         return prevHero;
       }
 
       const nextHero = {
         ...prevHero,
-        current_xp: prevHero.current_xp - STAT_UPGRADE_COST,
-        [statKey]: (prevHero[statKey] ?? 0) + STAT_UPGRADE_AMOUNT
+        current_xp: prevHero.current_xp - upgradeCost,
+        [statKey]: (prevHero[statKey] ?? 0) + STAT_UPGRADE_AMOUNT,
+        stat_upgrades: {
+          ...prevHero.stat_upgrades,
+          [statKey]: upgradeCount + 1
+        }
       };
 
       if (statKey === 'max_hp') {

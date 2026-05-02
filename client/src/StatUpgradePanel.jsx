@@ -1,8 +1,13 @@
 import React from 'react';
 import './StatUpgradePanel.css';
 
-const STAT_UPGRADE_COST = 20;
+const BASE_STAT_UPGRADE_COST = 20;
 const STAT_UPGRADE_AMOUNT = 5;
+const STAT_UPGRADE_COST_INCREMENT = 10;
+
+const calculateUpgradeCost = (upgradeCount) => {
+  return BASE_STAT_UPGRADE_COST + (upgradeCount * STAT_UPGRADE_COST_INCREMENT);
+};
 
 const STAT_LABELS = {
   attack: 'Attack',
@@ -31,7 +36,9 @@ const StatUpgradePanel = ({ heroState, onUpgradeStat }) => {
       <div className="stat-upgrade-list">
         {STAT_KEYS.map(statKey => {
           const currentValue = heroState?.[statKey] ?? 0;
-          const canUpgrade = availableXp >= STAT_UPGRADE_COST;
+          const upgradeCount = heroState?.stat_upgrades?.[statKey] ?? 0;
+          const upgradeCost = calculateUpgradeCost(upgradeCount);
+          const canUpgrade = availableXp >= upgradeCost;
 
           return (
             <div key={statKey} className="stat-upgrade-row">
@@ -46,7 +53,7 @@ const StatUpgradePanel = ({ heroState, onUpgradeStat }) => {
                 onClick={() => onUpgradeStat(statKey)}
                 disabled={!canUpgrade}
               >
-                +{STAT_UPGRADE_AMOUNT} for {STAT_UPGRADE_COST} XP
+                +{STAT_UPGRADE_AMOUNT} for {upgradeCost} XP
               </button>
             </div>
           );
