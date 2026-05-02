@@ -5,6 +5,7 @@ import BattleScreen from './BattleScreen';
 import BattleResultScreen from './BattleResultScreen';
 
 const HERO_PROGRESS_STORAGE_KEY = 'nordeus.heroProgression';
+const ENCOUNTERS_STORAGE_KEY = 'nordeus.encounters';
 const BASE_STAT_UPGRADE_COST = 20;
 const STAT_UPGRADE_AMOUNT = 5;
 const STAT_UPGRADE_COST_INCREMENT = 10;
@@ -25,6 +26,24 @@ const readStoredHeroProgression = () => {
     console.error('Failed to read stored hero progression:', error);
     return null;
   }
+};
+
+const readStoredEncounters = () => {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  try {
+    const rawEncounters = window.localStorage.getItem(ENCOUNTERS_STORAGE_KEY);
+    return rawEncounters ? JSON.parse(rawEncounters) : null;
+  } catch (error) {
+    console.error('Failed to read stored encounters:', error);
+    return null;
+  }
+};
+
+const hasSavedRun = () => {
+  return readStoredHeroProgression() !== null && readStoredEncounters() !== null;
 };
 
 const mergeHeroState = (baseHero, storedHero) => {
@@ -75,6 +94,11 @@ function App() {
   const [battleResultData, setBattleResultData] = useState(null); // Track battle results
   const [allLearnedMoves, setAllLearnedMoves] = useState([]); // Track all abilities learned
   const [allLearnedMovesDetails, setAllLearnedMovesDetails] = useState({}); // Store full details of all learned moves
+  const [savedRunExists, setSavedRunExists] = useState(false);
+
+  useEffect(() => {
+    setSavedRunExists(hasSavedRun());
+  }, []);
 
   const handleStartGame = async () => {
     try {
@@ -99,6 +123,32 @@ function App() {
     }
   };
 
+  const handleContinueRun = () => {
+    const savedHero = readStoredHeroProgression();
+    const savedEncounters = readStoredEncounters();
+
+    if (!savedHero || !savedEncounters) {
+      console.error("No saved run found");
+      return;
+    }
+
+    setHeroState(savedHero);
+    setEncounters(savedEncounters);
+
+    // Load all learned moves
+    const moveIds = savedHero.equipped_moves.map(m => m.id);
+    setAllLearnedMoves(moveIds);
+
+    // Store full details of all learned moves
+    const moveDetails = {};
+    savedHero.equipped_moves.forEach(move => {
+      moveDetails[move.id] = move;
+    });
+    setAllLearnedMovesDetails(moveDetails);
+
+    setCurrentScreen('map');
+  };
+
   useEffect(() => {
     if (typeof window === 'undefined' || !heroState) {
       return;
@@ -110,6 +160,18 @@ function App() {
       console.error('Failed to store hero progression:', error);
     }
   }, [heroState]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || encounters.length === 0) {
+      return;
+    }
+
+    try {
+      window.localStorage.setItem(ENCOUNTERS_STORAGE_KEY, JSON.stringify(encounters));
+    } catch (error) {
+      console.error('Failed to store encounters:', error);
+    }
+  }, [encounters]);
 
   const handleEnterBattle = (monsterData) => {
     setActiveMonster(monsterData);
@@ -274,7 +336,11 @@ function App() {
   return (
     <div>
       {currentScreen === 'menu' && (
-        <MainMenu onStartRun={handleStartGame} />
+        <MainMenu 
+          onStartRun={handleStartGame} 
+          onContinueRun={handleContinueRun}
+          savedRunExists={savedRunExists}
+        />
       )}
       
       {currentScreen === 'map' && (

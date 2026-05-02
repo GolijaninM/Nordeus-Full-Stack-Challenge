@@ -1,7 +1,7 @@
 import React from 'react';
 import './MainMenu.css';
 
-const MainMenu = ({ onStartRun }) => {
+const MainMenu = ({ onStartRun, onContinueRun, savedRunExists }) => {
   
   // Handling the "Exit" button on the web
   const handleExit = () => {
@@ -17,6 +17,12 @@ const MainMenu = ({ onStartRun }) => {
           <button className="menu-button start-btn" onClick={onStartRun}>
             Start New Run
           </button>
+
+          {savedRunExists && (
+            <button className="menu-button continue-btn" onClick={onContinueRun}>
+              Continue Run
+            </button>
+          )}
           
           <button className="menu-button exit-btn" onClick={handleExit}>
             Exit Game
