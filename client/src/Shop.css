@@ -129,6 +129,15 @@
   max-height: 100%;
   width: auto;
   height: 80%;
+  display: block;
+}
+
+.skin-locked {
+  padding: 8px 12px;
+  background: rgba(0,0,0,0.45);
+  border-radius: 6px;
+  color: #f5f7fa;
+  font-weight: 700;
 }
 
 .skin-info {

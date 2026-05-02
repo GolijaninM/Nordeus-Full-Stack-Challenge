@@ -70,7 +70,20 @@ const mergeHeroState = (baseHero, storedHero) => {
     max_hp: storedHero.max_hp ?? baseHero.max_hp,
     coins: storedHero.coins ?? baseHero.coins ?? 0,
     current_skin: storedHero.current_skin ?? baseHero.current_skin ?? 'knight_default',
-    available_skins: baseHero.available_skins,
+    // merge available skins and ensure secret skins exist
+    available_skins: (() => {
+      const baseSkins = baseHero.available_skins || {};
+      const storedSkins = (storedHero && storedHero.available_skins) ? storedHero.available_skins : {};
+      const combined = { ...baseSkins, ...storedSkins };
+      // Add two secret skins if missing. These start locked and are shown as ??? in shop.
+      if (!combined['knight_secret_left']) {
+        combined['knight_secret_left'] = { name: '???', cost: 0, unlocked: false, coords: [0, 0], image: 'easter-egg' };
+      }
+      if (!combined['knight_secret_right']) {
+        combined['knight_secret_right'] = { name: '???', cost: 0, unlocked: false, coords: [32, 0], image: 'easter-egg' };
+      }
+      return combined;
+    })(),
     equipped_moves: baseHero.equipped_moves,
     stat_upgrades: storedHero.stat_upgrades ?? {
       attack: 0,
@@ -104,7 +117,19 @@ function App() {
     try {
       const response = await fetch('http://localhost:5000/api/start-run');
       const data = await response.json();
-      setHeroState(data.hero);
+      // Ensure secret skins exist on fresh runs
+      const heroWithSecrets = {
+        ...data.hero,
+        available_skins: (() => {
+          const base = data.hero.available_skins || {};
+          const combined = { ...base };
+          if (!combined['knight_secret_left']) combined['knight_secret_left'] = { name: '???', cost: 0, unlocked: false, coords: [0, 0], image: 'easter-egg' };
+          if (!combined['knight_secret_right']) combined['knight_secret_right'] = { name: '???', cost: 0, unlocked: false, coords: [32, 0], image: 'easter-egg' };
+          return combined;
+        })()
+      };
+
+      setHeroState(heroWithSecrets);
       setEncounters(data.run_encounters);
       // Initialize all learned moves with default moves
       const moveIds = data.hero.equipped_moves.map(m => m.id);
@@ -132,7 +157,19 @@ function App() {
       return;
     }
 
-    setHeroState(savedHero);
+    // Ensure secret skins exist on continued runs
+    const patchedHero = {
+      ...savedHero,
+      available_skins: (() => {
+        const base = savedHero.available_skins || {};
+        const combined = { ...base };
+        if (!combined['knight_secret_left']) combined['knight_secret_left'] = { name: '???', cost: 0, unlocked: false, coords: [0, 0], image: 'easter-egg' };
+        if (!combined['knight_secret_right']) combined['knight_secret_right'] = { name: '???', cost: 0, unlocked: false, coords: [32, 0], image: 'easter-egg' };
+        return combined;
+      })()
+    };
+
+    setHeroState(patchedHero);
     setEncounters(savedEncounters);
 
     // Load all learned moves
@@ -147,6 +184,22 @@ function App() {
     setAllLearnedMovesDetails(moveDetails);
 
     setCurrentScreen('map');
+  };
+
+  const handleUnlockSkin = (skinId) => {
+    setHeroState(prev => {
+      if (!prev) return prev;
+      const updatedSkins = { ...prev.available_skins };
+      if (!updatedSkins[skinId]) return prev;
+      // Reveal the skin name when unlocked (replace ???)
+      const revealedName = skinId === 'knight_secret_left' ? 'Golf Player' : (skinId === 'knight_secret_right' ? 'Football Manager' : (updatedSkins[skinId].displayName ?? 'Secret'));
+      updatedSkins[skinId] = { ...updatedSkins[skinId], unlocked: true, name: revealedName };
+
+      return {
+        ...prev,
+        available_skins: updatedSkins
+      };
+    });
   };
 
   useEffect(() => {
@@ -362,6 +415,7 @@ function App() {
           hero={heroState}
           monster={activeMonster}
           onBattleEnd={handleBattleEnd}
+          onUnlockSkin={handleUnlockSkin}
         />
       )}
 

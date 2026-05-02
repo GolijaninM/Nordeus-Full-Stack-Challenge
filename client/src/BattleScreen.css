@@ -372,3 +372,27 @@
 .move-button.status { 
   border-left: 6px solid #3498db; 
 }
+
+/* Secret collectible balls */
+.secret-ball {
+  position: absolute;
+  width: 56px;
+  height: 56px;
+  cursor: pointer;
+  z-index: 4;
+  transition: transform 160ms ease, opacity 200ms ease;
+}
+
+.golf-ball {
+  right: 220px;
+  bottom: 180px;
+}
+
+.football-ball {
+  left: 220px;
+  bottom: 180px;
+}
+
+.secret-ball:hover {
+  transform: scale(1.08);
+}

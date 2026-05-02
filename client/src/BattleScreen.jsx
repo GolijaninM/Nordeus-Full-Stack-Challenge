@@ -2,8 +2,12 @@ import React, { useState } from 'react';
 import './BattleScreen.css';
 import combatField from '../images/combat-field.png';
 import LogicalCropImage from './LogicalCropImage';
+import golfBall from '../images/secret items/Golf-ball.png';
+import footballBall from '../images/secret items/Football-ball.png';
+import topElevenImage from '../images/characters/top-eleven.png';
+import golfRivalImage from '../images/characters/golf-rival.png';
 
-const BattleScreen = ({ hero, monster, onBattleEnd }) => {
+const BattleScreen = ({ hero, monster, onBattleEnd, onUnlockSkin }) => {
 
   const [heroHp, setHeroHp] = useState(hero.current_hp);
   const [heroMaxHp] = useState(hero.max_hp);
@@ -118,7 +122,7 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
       }
 
       // Display the hero's action
-      setCombatLog(`${hero.name} used ${data.hero_move} and dealt ${data.hero_damage} damage!`);
+      setCombatLog(`You used ${data.hero_move} and dealt ${data.hero_damage} damage!`);
       console.log("Heros defense: " + currentHeroDef);
       console.log("Heros attack: " + currentHeroAtk);
 
@@ -147,7 +151,7 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
               });
             }, 2000);
           } else {
-            setCombatLog(`Defeat! ${hero.name} has fallen...`);
+            setCombatLog(`Defeat! You have fallen...`);
             setTimeout(() => onBattleEnd({ won: false, monster: monster }), 2000);
           }
         }, 1500);
@@ -157,6 +161,11 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
       console.error("Failed to process turn:", error);
       setIsProcessing(false);
     }
+  };
+
+  const handleSecretClick = (skinId, onUnlock) => {
+    // unlock via App handler passed in props (if exists)
+    if (onUnlock) onUnlock(skinId);
   };
 
   const heroHpPercent = Math.max(0, (heroHp / heroMaxHp) * 100);
@@ -200,7 +209,7 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
         {/* Hero with circular ability buttons */}
         <div className="hero-battle-zone">
           <div className="hud hero-hud">
-            <h3>{hero.name}</h3>
+            <h3>You</h3>
             <div className="health-bar-bg">
               <div className="health-bar-fill hero-fill" style={{ width: `${heroHpPercent}%` }}></div>
             </div>
@@ -208,7 +217,14 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
           </div>
 
           <div className={`character-sprite hero-sprite ${heroHit ? 'is-hit' : ''}`}>
-            {hero.available_skins && hero.current_skin && hero.available_skins[hero.current_skin] ? (
+            {hero.available_skins && hero.current_skin && hero.available_skins[hero.current_skin] && hero.available_skins[hero.current_skin].image === 'easter-egg' ? (
+              // Display separate easter-egg PNG files for secret skins
+              <img
+                src={hero.current_skin === 'knight_secret_left' ? golfRivalImage : topElevenImage}
+                alt={hero.available_skins[hero.current_skin].name}
+                style={{ maxWidth: '40px', maxHeight: '40px', objectFit: 'contain', imageRendering: 'pixelated' }}
+              />
+            ) : hero.available_skins && hero.current_skin && hero.available_skins[hero.current_skin] ? (
               <LogicalCropImage
                 src="/images/characters/rogues.png"
                 cropCoords={{
@@ -222,6 +238,35 @@ const BattleScreen = ({ hero, monster, onBattleEnd }) => {
               <LogicalCropImage src="/images/characters/rogues.png" cropCoords={{ sx: 0, sy: 96, sWidth: 32, sHeight: 32 }} />
             )}
           </div>
+
+          {/* Secret collectible balls for certain encounter orders */}
+          {monster && monster.order === 3 && hero && hero.available_skins && !hero.available_skins['knight_secret_left']?.unlocked && (
+            <img
+              src={golfBall}
+              alt="golf ball"
+              className="secret-ball golf-ball"
+              onClick={() => {
+                if (typeof onUnlockSkin === 'function') {
+                  onUnlockSkin('knight_secret_left');
+                }
+                setCombatLog('You found a hidden golf ball! A secret skin was unlocked.');
+              }}
+            />
+          )}
+
+          {monster && monster.order === 5 && hero && hero.available_skins && !hero.available_skins['knight_secret_right']?.unlocked && (
+            <img
+              src={footballBall}
+              alt="football ball"
+              className="secret-ball football-ball"
+              onClick={() => {
+                if (typeof onUnlockSkin === 'function') {
+                  onUnlockSkin('knight_secret_right');
+                }
+                setCombatLog('You found a hidden football! A secret skin was unlocked.');
+              }}
+            />
+          )}
 
           {/* Circular ability buttons around hero */}
           <div className="circular-moves">

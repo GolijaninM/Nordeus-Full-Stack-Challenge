@@ -1,6 +1,8 @@
 import React from 'react';
 import './Shop.css';
 import roguesImage from '../images/characters/rogues.png';
+import topElevenImage from '../images/characters/top-eleven.png';
+import golfRivalImage from '../images/characters/golf-rival.png';
 import LogicalCropImage from './LogicalCropImage';
 
 const Shop = ({ heroState, onBuySkin, onEquipSkin, onClose }) => {
@@ -23,7 +25,14 @@ const Shop = ({ heroState, onBuySkin, onEquipSkin, onClose }) => {
           
           <div className="skins-grid">
             {Object.entries(heroState.available_skins)
-              .sort(([, skinA], [, skinB]) => skinA.cost - skinB.cost)
+              .sort(([, skinA], [, skinB]) => {
+                // Put secret easter-egg skins at the end regardless of cost
+                const aSecret = skinA.image === 'easter-egg';
+                const bSecret = skinB.image === 'easter-egg';
+                if (aSecret && !bSecret) return 1;
+                if (!aSecret && bSecret) return -1;
+                return (skinA.cost || 0) - (skinB.cost || 0);
+              })
               .map(([skinId, skin]) => {
               const isOwned = skin.unlocked;
               const isEquipped = heroState.current_skin === skinId;
@@ -41,10 +50,23 @@ const Shop = ({ heroState, onBuySkin, onEquipSkin, onClose }) => {
                 <div key={skinId} className={`skin-card ${isEquipped ? 'equipped' : ''}`}>
                   {/* Skin preview using LogicalCropImage */}
                   <div className="skin-preview">
-                    <LogicalCropImage 
-                      src={roguesImage}
-                      cropCoords={cropCoords}
-                    />
+                    {skin.name === '???' && !skin.unlocked ? (
+                      // Full black silhouette for secret locked skins
+                      <div style={{ width: '64px', height: '64px', background: '#000', borderRadius: 4 }} />
+                    ) : skin.image === 'easter-egg' ? (
+                      // Show separate easter-egg PNG files
+                      <img 
+                        src={skinId === 'knight_secret_left' ? golfRivalImage : topElevenImage}
+                        alt={skin.name}
+                        style={{ maxWidth: '90%', maxHeight: '100%', objectFit: 'contain' }}
+                      />
+                    ) : (
+                      <LogicalCropImage 
+                        src={roguesImage}
+                        cropCoords={cropCoords}
+                        displayScale={3}
+                      />
+                    )}
                   </div>
                   
                   <div className="skin-info">
@@ -63,13 +85,18 @@ const Shop = ({ heroState, onBuySkin, onEquipSkin, onClose }) => {
                         )}
                       </>
                     ) : (
-                      <button
-                        className={`skin-btn buy-btn ${!canAfford ? 'disabled' : ''}`}
-                        onClick={() => onBuySkin(skinId)}
-                        disabled={!canAfford}
-                      >
-                        {skin.cost} coins
-                      </button>
+                      // For secret skins (easter-egg) do not allow purchase — only unlock via collectibles
+                      skin.image === 'easter-egg' ? (
+                        <div className="skin-locked">Locked</div>
+                      ) : (
+                        <button
+                          className={`skin-btn buy-btn ${!canAfford ? 'disabled' : ''}`}
+                          onClick={() => onBuySkin(skinId)}
+                          disabled={!canAfford}
+                        >
+                          {skin.cost} coins
+                        </button>
+                      )
                     )}
                   </div>
                 </div>

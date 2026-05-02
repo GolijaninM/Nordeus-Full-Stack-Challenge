@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 
-const LogicalCropImage = ({ src, cropCoords }) => {
+const LogicalCropImage = ({ src, cropCoords, displayScale = 1 }) => {
   const canvasRef = useRef(null);
   const imgRef = useRef(null);
   const [croppedDataUrl, setCroppedDataUrl] = useState('');
@@ -16,11 +16,14 @@ const LogicalCropImage = ({ src, cropCoords }) => {
 
     const drawCrop = () => {
       const { sx, sy, sWidth, sHeight } = cropCoords;
-      canvas.width = sWidth;
-      canvas.height = sHeight;
+      const dw = Math.max(1, Math.floor(sWidth * displayScale));
+      const dh = Math.max(1, Math.floor(sHeight * displayScale));
+      canvas.width = dw;
+      canvas.height = dh;
 
-      ctx.clearRect(0, 0, sWidth, sHeight);
-      ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, sWidth, sHeight);
+      ctx.clearRect(0, 0, dw, dh);
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, dw, dh);
 
       const dataUrl = canvas.toDataURL('image/png');
       setCroppedDataUrl(dataUrl);
