@@ -17,12 +17,12 @@ const MapOverview = ({ encounters, heroState, allLearnedMoves, allLearnedMovesDe
     <div className="map-page-container">
       {/* Ability Selector Button */}
       <button className="ability-selector-btn" onClick={() => setShowAbilitySelector(true)}>
-        ⚔️ Select Abilities
+        ⚔️ Abilities
       </button>
 
       {/* Shop Button */}
       <button className="shop-btn" onClick={() => setShowShop(true)}>
-        🛍️ Shop
+        🛒 Skins
       </button>
 
       <StatUpgradePanel heroState={heroState} onUpgradeStat={onUpgradeStat} />

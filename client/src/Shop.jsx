@@ -12,7 +12,7 @@ const Shop = ({ heroState, onBuySkin, onEquipSkin, onClose }) => {
     <div className="shop-overlay">
       <div className="shop-modal">
         <div className="shop-header">
-          <h2>🛍️ Skin Shop</h2>
+          <h2>Skin Shop</h2>
           <button className="close-btn" onClick={onClose}>×</button>
         </div>
 
