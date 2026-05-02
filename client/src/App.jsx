@@ -7,7 +7,7 @@ import BattleResultScreen from './BattleResultScreen';
 const HERO_PROGRESS_STORAGE_KEY = 'nordeus.heroProgression';
 const BASE_STAT_UPGRADE_COST = 20;
 const STAT_UPGRADE_AMOUNT = 5;
-const STAT_UPGRADE_COST_INCREMENT = 5;
+const STAT_UPGRADE_COST_INCREMENT = 10;
 
 const calculateUpgradeCost = (upgradeCount) => {
   return BASE_STAT_UPGRADE_COST + (upgradeCount * STAT_UPGRADE_COST_INCREMENT);
