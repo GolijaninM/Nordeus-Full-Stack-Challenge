@@ -6,6 +6,8 @@ import BattleResultScreen from './screens/BattleScreen/BattleResultScreen';
 
 const HERO_PROGRESS_STORAGE_KEY = 'nordeus.heroProgression';
 const ENCOUNTERS_STORAGE_KEY = 'nordeus.encounters';
+const LEARNED_MOVES_STORAGE_KEY = 'nordeus.learnedMoves';
+const LEARNED_MOVES_DETAILS_STORAGE_KEY = 'nordeus.learnedMovesDetails';
 const BASE_STAT_UPGRADE_COST = 20;
 const STAT_UPGRADE_AMOUNT = 5;
 const STAT_UPGRADE_COST_INCREMENT = 10;
@@ -39,6 +41,34 @@ const readStoredEncounters = () => {
   } catch (error) {
     console.error('Failed to read stored encounters:', error);
     return null;
+  }
+};
+
+const readStoredLearnedMoves = () => {
+  if (typeof window === 'undefined') {
+    return [];
+  }
+
+  try {
+    const rawMoves = window.localStorage.getItem(LEARNED_MOVES_STORAGE_KEY);
+    return rawMoves ? JSON.parse(rawMoves) : [];
+  } catch (error) {
+    console.error('Failed to read stored learned moves:', error);
+    return [];
+  }
+};
+
+const readStoredLearnedMovesDetails = () => {
+  if (typeof window === 'undefined') {
+    return {};
+  }
+
+  try {
+    const rawDetails = window.localStorage.getItem(LEARNED_MOVES_DETAILS_STORAGE_KEY);
+    return rawDetails ? JSON.parse(rawDetails) : {};
+  } catch (error) {
+    console.error('Failed to read stored learned moves details:', error);
+    return {};
   }
 };
 
@@ -129,6 +159,12 @@ function App() {
         })()
       };
 
+      heroWithSecrets.learned_moves = data.hero.equipped_moves.map(move => move.id);
+      heroWithSecrets.learned_moves_details = data.hero.equipped_moves.reduce((details, move) => {
+        details[move.id] = move;
+        return details;
+      }, {});
+
       setHeroState(heroWithSecrets);
       setEncounters(data.run_encounters);
       // Initialize all learned moves with default moves
@@ -172,16 +208,17 @@ function App() {
     setHeroState(patchedHero);
     setEncounters(savedEncounters);
 
-    // Load all learned moves
-    const moveIds = savedHero.equipped_moves.map(m => m.id);
-    setAllLearnedMoves(moveIds);
+    // Load learned moves from the saved hero first, then fall back to separate storage
+    const savedMoveIds = Array.isArray(savedHero.learned_moves) && savedHero.learned_moves.length > 0
+      ? savedHero.learned_moves
+      : readStoredLearnedMoves();
+    setAllLearnedMoves(savedMoveIds.length > 0 ? savedMoveIds : []);
 
-    // Store full details of all learned moves
-    const moveDetails = {};
-    savedHero.equipped_moves.forEach(move => {
-      moveDetails[move.id] = move;
-    });
-    setAllLearnedMovesDetails(moveDetails);
+    // Load learned move details from the saved hero first, then fall back to separate storage
+    const savedMoveDetails = savedHero.learned_moves_details && typeof savedHero.learned_moves_details === 'object'
+      ? savedHero.learned_moves_details
+      : readStoredLearnedMovesDetails();
+    setAllLearnedMovesDetails(savedMoveDetails);
 
     setCurrentScreen('map');
   };
@@ -208,11 +245,16 @@ function App() {
     }
 
     try {
-      window.localStorage.setItem(HERO_PROGRESS_STORAGE_KEY, JSON.stringify(heroState));
+      const heroProgressToStore = {
+        ...heroState,
+        learned_moves: allLearnedMoves,
+        learned_moves_details: allLearnedMovesDetails
+      };
+      window.localStorage.setItem(HERO_PROGRESS_STORAGE_KEY, JSON.stringify(heroProgressToStore));
     } catch (error) {
       console.error('Failed to store hero progression:', error);
     }
-  }, [heroState]);
+  }, [heroState, allLearnedMoves, allLearnedMovesDetails]);
 
   useEffect(() => {
     if (typeof window === 'undefined' || encounters.length === 0) {
@@ -225,6 +267,30 @@ function App() {
       console.error('Failed to store encounters:', error);
     }
   }, [encounters]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    try {
+      window.localStorage.setItem(LEARNED_MOVES_STORAGE_KEY, JSON.stringify(allLearnedMoves));
+    } catch (error) {
+      console.error('Failed to store learned moves:', error);
+    }
+  }, [allLearnedMoves]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    try {
+      window.localStorage.setItem(LEARNED_MOVES_DETAILS_STORAGE_KEY, JSON.stringify(allLearnedMovesDetails));
+    } catch (error) {
+      console.error('Failed to store learned moves details:', error);
+    }
+  }, [allLearnedMovesDetails]);
 
   const handleEnterBattle = (monsterData) => {
     setActiveMonster(monsterData);
