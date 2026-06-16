@@ -4,6 +4,7 @@
     "type": "physical",
     "effect": "damage",
     "base_value": 15,
+    "cooldown": 0,
     "description": "Deals moderate physical damage. Scales with Attack and is reduced by target's Defense."
   },
   "shield_up": {
@@ -13,7 +14,8 @@
     "target_stat": "defense",
     "stat_change": 5,
     "duration": 2,
-    "description": "Raises the user's Defense by 5 for two turns."
+    "cooldown": 1,
+    "description": "Raises the user's Defense by 5 for two turns. Usable every other turn."
   },
   "battle_cry": {
     "name": "Battle Cry",
@@ -22,27 +24,33 @@
     "target_stat": "attack",
     "stat_change": 5,
     "duration": 2,
-    "description": "Raises the user's Attack by 5 for two turns."
+    "cooldown": 1,
+    "description": "Raises the user's Attack by 5 for two turns. Usable every other turn."
   },
   "second_wind": {
     "name": "Second Wind",
     "type": "magic",
     "effect": "heal",
-    "base_value": 20,
-    "description": "Heals the user for 20 base HP. Scales with Magic."
+    "base_value": 40,
+    "cooldown": 2,
+    "description": "Heals the user for 40 base HP. Scales with Magic. Usable every third turn."
   },
   "shadow_bolt": {
     "name": "Shadow Bolt",
     "type": "magic",
     "effect": "damage",
     "base_value": 25,
-    "description": "Deals heavy magic damage. Scales with Magic and bypasses Defense entirely."
+    "cooldown": 1,
+    "combo_requirement_debuff": "curse",
+    "combo_multiplier": 1.5,
+    "description": "Deals heavy magic damage. Deals 1.5x damage if the target is cursed."
   },
   "drain_life": {
     "name": "Drain Life",
     "type": "magic",
     "effect": "lifesteal",
     "base_value": 10,
+    "cooldown": 2,
     "description": "Deals light magic damage and heals the user for the same amount. Scales with Magic."
   },
   "curse": {
@@ -52,7 +60,8 @@
     "target_stat": "attack",
     "stat_change": 5,
     "duration": 2,
-    "description": "Lowers the target's Attack by 5 for two turns."
+    "cooldown": 1,
+    "description": "Lowers the target's Attack by 5 for two turns and sets up Shadow Bolt."
   },
   "dark_pact": {
     "name": "Dark Pact",
@@ -62,14 +71,19 @@
     "stat_change": 5,
     "cost_hp": 15,
     "duration": 2,
+    "cooldown": 2,
     "description": "Raises the user's Magic by 5 for two turns at the cost of 15 HP."
   },
   "bite": {
     "name": "Bite",
     "type": "physical",
-    "effect": "damage",
-    "base_value": 15,
-    "description": "Deals moderate physical damage. Scales with Attack and is reduced by Defense."
+    "effect": "damage_and_dot",
+    "base_value": 12,
+    "dot_effect": "poison",
+    "dot_damage": 4,
+    "duration": 2,
+    "cooldown": 0,
+    "description": "Deals physical damage and poisons the target for 4 damage per turn for 2 turns."
   },
   "web_throw": {
     "name": "Web Throw",
@@ -79,14 +93,18 @@
     "target_stat": "defense",
     "stat_change": 5,
     "duration": 2,
-    "description": "Deals light physical damage and lowers the target's Defense by 5 for two turns. Scales with Attack."
+    "cooldown": 1,
+    "description": "Deals light physical damage and lowers the target's Defense by 5 for two turns."
   },
   "pounce": {
     "name": "Pounce",
     "type": "physical",
     "effect": "damage",
     "base_value": 25,
-    "description": "Deals heavy physical damage. Scales with Attack and is reduced by Defense."
+    "cooldown": 1,
+    "combo_requirement_debuff": "web_throw",
+    "combo_multiplier": 1.5,
+    "description": "Deals heavy physical damage. Deals 1.5x damage if the target is webbed."
   },
   "skitter": {
     "name": "Skitter",
@@ -95,21 +113,29 @@
     "target_stat": "defense",
     "stat_change": 5,
     "duration": 2,
+    "cooldown": 1,
     "description": "Raises the user's Defense by 5 for two turns."
   },
   "flame_breath": {
     "name": "Flame Breath",
     "type": "magic",
-    "effect": "damage",
+    "effect": "damage_and_dot",
     "base_value": 30,
-    "description": "Deals heavy magic damage. Scales with Magic and bypasses Defense entirely."
+    "dot_effect": "burn",
+    "dot_damage": 14,
+    "duration": 3,
+    "cooldown": 2,
+    "description": "Deals heavy magic damage and burns the target for 14 damage per turn for 3 turns."
   },
   "claw_swipe": {
     "name": "Claw Swipe",
     "type": "physical",
     "effect": "damage",
     "base_value": 20,
-    "description": "Deals moderate physical damage. Scales with Attack and is reduced by Defense."
+    "cooldown": 0,
+    "combo_requirement_debuff": "intimidate",
+    "combo_multiplier": 1.5,
+    "description": "Deals moderate physical damage. Deals 1.5x damage if the target is intimidated."
   },
   "intimidate": {
     "name": "Intimidate",
@@ -118,7 +144,8 @@
     "target_stat": "attack",
     "stat_change": 5,
     "duration": 2,
-    "description": "Lowers the target's Attack by 5 for two turns."
+    "cooldown": 1,
+    "description": "Lowers the target's Attack by 5 for two turns and sets up Claw Swipe."
   },
   "dragon_scales": {
     "name": "Dragon Scales",
@@ -127,13 +154,26 @@
     "target_stat": "defense",
     "stat_change": 5,
     "duration": 2,
+    "cooldown": 1,
     "description": "Raises the user's Defense by 5 for two turns."
+  },
+  "inferno": {
+    "name": "Inferno",
+    "type": "magic",
+    "effect": "damage_and_dot",
+    "base_value": 45,
+    "dot_effect": "burn",
+    "dot_damage": 20,
+    "duration": 3,
+    "cooldown": 2,
+    "description": "Enrage-only dragon spell. Deals massive damage and burns the target."
   },
   "rusty_blade": {
     "name": "Rusty Blade",
     "type": "physical",
     "effect": "damage",
     "base_value": 12,
+    "cooldown": 0,
     "description": "Deals moderate physical damage. Scales with Attack and is reduced by Defense."
   },
   "dirty_kick": {
@@ -144,7 +184,8 @@
     "target_stat": "defense",
     "stat_change": 5,
     "duration": 2,
-    "description": "Deals light physical damage and lowers the target's Defense by 5 for two turns. Scales with Attack."
+    "cooldown": 1,
+    "description": "Deals light physical damage and lowers the target's Defense by 5 for two turns."
   },
   "frenzy": {
     "name": "Frenzy",
@@ -153,6 +194,7 @@
     "target_stat": "attack",
     "stat_change": 5,
     "duration": 2,
+    "cooldown": 1,
     "description": "Raises the user's Attack by 5 for two turns."
   },
   "headbutt": {
@@ -160,14 +202,21 @@
     "type": "physical",
     "effect": "damage",
     "base_value": 20,
-    "description": "Deals heavy physical damage. Scales with Attack and is reduced by Defense."
+    "cooldown": 1,
+    "combo_requirement_previous_move": "frenzy",
+    "combo_multiplier": 1.5,
+    "description": "Deals heavy physical damage. Deals 1.5x damage after Frenzy."
   },
   "firebolt": {
     "name": "Firebolt",
     "type": "magic",
-    "effect": "damage",
+    "effect": "damage_and_dot",
     "base_value": 18,
-    "description": "Deals moderate magic damage. Scales with Magic and bypasses Defense entirely."
+    "dot_effect": "burn",
+    "dot_damage": 8,
+    "duration": 3,
+    "cooldown": 1,
+    "description": "Deals moderate magic damage and burns the target for 8 damage per turn for 3 turns."
   },
   "arcane_surge": {
     "name": "Arcane Surge",
@@ -176,6 +225,7 @@
     "target_stat": "magic",
     "stat_change": 5,
     "duration": 2,
+    "cooldown": 1,
     "description": "Raises the user's Magic by 5 for two turns."
   },
   "mana_drain": {
@@ -186,7 +236,8 @@
     "target_stat": "magic",
     "stat_change": 5,
     "duration": 2,
-    "description": "Deals light magic damage and lowers the target's Magic by 5 for two turns. Scales with Magic."
+    "cooldown": 1,
+    "description": "Deals light magic damage and lowers the target's Magic by 5 for two turns."
   },
   "hex_shield": {
     "name": "Hex Shield",
@@ -195,6 +246,7 @@
     "target_stat": "defense",
     "stat_change": 5,
     "duration": 2,
+    "cooldown": 1,
     "description": "Raises the user's Defense by 5 for two turns."
   }
 }
