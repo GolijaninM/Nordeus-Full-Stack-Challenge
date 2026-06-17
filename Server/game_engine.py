@@ -304,7 +304,7 @@ def set_move_cooldown(state, move_id, move):
         state.setdefault("cooldowns", {})[move_id] = cooldown
 
 
-def apply_enrage_if_needed(monster_state, moves, events):
+def apply_enrage_if_needed(monster_state, moves, events, target_label="monster"):
     if monster_state.get("enraged"):
         return
 
@@ -329,7 +329,7 @@ def apply_enrage_if_needed(monster_state, moves, events):
     refresh_effective_stats(monster_state)
     events.append({
         "type": "enrage",
-        "target": "monster",
+        "target": target_label,
         "stat": stat,
         "amount": value,
         "unlocked_moves": [
