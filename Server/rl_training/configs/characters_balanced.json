@@ -1,0 +1,88 @@
+{
+  "hero": {
+    "id": "knight",
+    "name": "Knight",
+    "max_hp": 305,
+    "attack": 17,
+    "defense": 15,
+    "magic": 14,
+    "default_moves": ["slash", "shield_up", "battle_cry", "second_wind"],
+    "coins": 0,
+    "current_skin": "knight_default",
+    "available_skins": {
+      "knight_default": { "name": "Knight", "cost": 0, "unlocked": true, "coords": [0, 32] },
+      "knight_rogue": { "name": "Rogue Knight", "cost": 50, "unlocked": false, "coords": [0, 0] },
+      "knight_assassin": { "name": "Assassin", "cost": 100, "unlocked": false, "coords": [96, 0] },
+      "knight_ranger": { "name": "Ranger Knight", "cost": 75, "unlocked": false, "coords": [128, 32] },
+      "knight_shadow": { "name": "Shadow Knight", "cost": 120, "unlocked": false, "coords": [32, 96] }
+    }
+  },
+  "monsters": [
+    {
+      "id": "goblin_warrior",
+      "name": "Goblin Warrior",
+      "level_order": 1,
+      "max_hp": 275,
+      "attack": 18,
+      "defense": 11,
+      "magic": 0,
+      "enrage_threshold": 0.3,
+      "enrage_buff_stat": "attack",
+      "enrage_buff_value": 8,
+      "moves": ["rusty_blade", "dirty_kick", "frenzy", "headbutt"]
+    },
+    {
+      "id": "goblin_mage",
+      "name": "Goblin Mage",
+      "level_order": 2,
+      "max_hp": 225,
+      "attack": 4,
+      "defense": 8,
+      "magic": 15,
+      "enrage_threshold": 0.3,
+      "enrage_buff_stat": "magic",
+      "enrage_buff_value": 6,
+      "moves": ["firebolt", "arcane_surge", "mana_drain", "hex_shield"]
+    },
+    {
+      "id": "giant_spider",
+      "name": "Giant Spider",
+      "level_order": 3,
+      "max_hp": 255,
+      "attack": 14,
+      "defense": 10,
+      "magic": 0,
+      "enrage_threshold": 0.3,
+      "enrage_buff_stat": "attack",
+      "enrage_buff_value": 8,
+      "moves": ["bite", "web_throw", "pounce", "skitter"]
+    },
+    {
+      "id": "witch",
+      "name": "Witch",
+      "level_order": 4,
+      "max_hp": 235,
+      "attack": 6,
+      "defense": 9,
+      "magic": 16,
+      "enrage_threshold": 0.3,
+      "enrage_buff_stat": "magic",
+      "enrage_buff_value": 6,
+      "moves": ["shadow_bolt", "drain_life", "curse", "dark_pact"]
+    },
+    {
+      "id": "dragon",
+      "name": "Dragon",
+      "level_order": 5,
+      "max_hp": 235,
+      "attack": 12,
+      "defense": 7,
+      "magic": 4,
+      "enrage_threshold": 0.3,
+      "enrage_buff_stat": "attack",
+      "enrage_buff_value": 3,
+      "enrage_unlock_moves": ["inferno"],
+      "moves": ["flame_breath", "claw_swipe", "intimidate", "dragon_scales"]
+    }
+  ]
+}

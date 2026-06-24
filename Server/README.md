@@ -21,7 +21,14 @@ This folder contains the Flask API, the shared battle engine, and the first Gymn
   - Uses a normalized `spaces.Box` observation vector.
   - Randomizes matchups in `reset()` so one universal model can learn to play as different characters.
   - Randomizes initiative: sometimes the agent starts, sometimes the opponent opens before the first agent observation.
+  - Can use a training-only character config through `character_config_path`.
   - Includes `RandomBotPolicy` and `ModelPolicy` for future opponent-pool/self-play training.
+
+- `rl_training/`
+  - Training-only helpers and configs.
+  - `configs/characters_balanced.json` is the current balanced character setup for RL experiments.
+  - `evaluation.py` contains shared evaluation/report helpers.
+  - `evaluate_dqn.py` evaluates a saved DQN checkpoint and writes matchup breakdowns.
 
 - `train_universal.py`
   - Initial training scaffold.
@@ -29,12 +36,19 @@ This folder contains the Flask API, the shared battle engine, and the first Gymn
   - PPO/DQN/SAC can use `TournamentEnv` through Stable-Baselines3.
   - NEAT should use the same env through a separate genome evaluation loop.
 
+- `train_dqn.py`
+  - First concrete training script.
+  - Trains a DQN agent against `RandomBotPolicy`.
+  - Uses `rl_training/configs/characters_balanced.json` by default.
+  - Saves the model, a CSV reward log, a PNG training curve, a small evaluation report, and matchup breakdowns.
+
 - `requirements.txt`
   - Backend/RL dependencies currently needed for Flask and Gymnasium.
 
 - `config/characters.json`
   - Defines the hero and monster templates.
   - Includes base stats, HP, move slots, and enrage settings.
+  - This remains the default game/UI config.
 
 - `config/moves.json`
   - Defines move behavior.
@@ -171,6 +185,66 @@ Recommended next steps before long training runs:
    - `train_neat.py`
 3. Add tournament/evaluation scripts for comparing checkpoints.
 4. Tune reward shaping after observing baseline results.
+
+## DQN Training
+
+Install backend/RL dependencies:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+```
+
+Run a short smoke training:
+
+```powershell
+.\.venv\Scripts\python.exe train_dqn.py --timesteps 2000 --eval-episodes 5 --output-dir models/dqn_smoke
+```
+
+Run a longer first experiment:
+
+```powershell
+.\.venv\Scripts\python.exe train_dqn.py --timesteps 100000 --eval-episodes 50 --output-dir models/dqn
+```
+
+This uses the balanced RL character config by default:
+
+```text
+rl_training/configs/characters_balanced.json
+```
+
+To train against the original game balance instead:
+
+```powershell
+.\.venv\Scripts\python.exe train_dqn.py --timesteps 100000 --eval-episodes 50 --output-dir models/dqn_original --character-config config/characters.json
+```
+
+Outputs:
+
+```text
+models/dqn/dqn_model.zip
+models/dqn/dqn_training_curve.csv
+models/dqn/dqn_training_curve.png
+models/dqn/dqn_evaluation.txt
+models/dqn/dqn_matchup_breakdown.txt
+```
+
+The curve is episode reward over time, with a moving average overlay. Early DQN runs may look noisy because matchups, character roles, and initiative are randomized.
+
+Evaluate an existing DQN model without retraining:
+
+```powershell
+.\.venv\Scripts\python.exe rl_training\evaluate_dqn.py --model models\dqn\dqn_model.zip --episodes 200
+```
+
+The matchup breakdown compares DQN against a valid-random baseline using the same seeds and reports:
+
+```text
+overall
+agent_character
+opponent_character
+dragon_presence
+initiative
+```
 
 ## Notes
 

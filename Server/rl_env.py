@@ -1,5 +1,7 @@
+import json
 import random
 from dataclasses import dataclass
+from pathlib import Path
 
 import gymnasium as gym
 import numpy as np
@@ -75,9 +77,10 @@ class ModelPolicy:
 class TournamentEnv(gym.Env):
     metadata = {"render_modes": []}
 
-    def __init__(self, opponent_pool=None, max_turns=80, invalid_action_penalty=-1.0):
+    def __init__(self, opponent_pool=None, max_turns=80, invalid_action_penalty=-1.0, character_config_path=None):
         super().__init__()
         self.moves_config = load_config("moves.json")
+        self.character_config_path = character_config_path
         self.characters = self._load_character_templates()
         self.opponent_pool = opponent_pool or [RandomBotPolicy()]
         self.max_turns = max_turns
@@ -396,7 +399,7 @@ class TournamentEnv(gym.Env):
         return opponent_action, opponent_result
 
     def _load_character_templates(self):
-        characters = load_config("characters.json")
+        characters = self._load_character_config()
         templates = []
 
         hero = characters.get("hero", {})
@@ -426,6 +429,17 @@ class TournamentEnv(gym.Env):
             ))
 
         return [template for template in templates if len(template.moves) == 4]
+
+    def _load_character_config(self):
+        if not self.character_config_path:
+            return load_config("characters.json")
+
+        config_path = Path(self.character_config_path)
+        if not config_path.is_absolute():
+            config_path = Path(__file__).resolve().parent / config_path
+
+        with config_path.open("r", encoding="utf-8") as file:
+            return json.load(file)
 
     @staticmethod
     def _scale(value, maximum):
