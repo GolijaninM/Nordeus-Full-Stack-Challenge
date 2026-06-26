@@ -70,10 +70,11 @@ def evaluate_policy(
     episodes=100,
     seed=10_000,
     character_config_path=None,
+    opponent_pool=None,
     deterministic=True,
 ):
     env = TournamentEnv(
-        opponent_pool=[RandomBotPolicy()],
+        opponent_pool=opponent_pool or [RandomBotPolicy()],
         character_config_path=character_config_path,
     )
 

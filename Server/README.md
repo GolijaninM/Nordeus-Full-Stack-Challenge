@@ -246,6 +246,47 @@ dragon_presence
 initiative
 ```
 
+## DQN Mixed Opponent Training
+
+After training baseline DQN checkpoints against `RandomBotPolicy`, the next phase is to train against a mixed opponent pool.
+
+Example 50/25/25 pool:
+
+```powershell
+.\.venv\Scripts\python.exe train_dqn.py --timesteps 1000000 --eval-episodes 500 --breakdown-episodes 500 --output-dir models\dqn_mixed_v2_1m --character-config rl_training/configs/characters_balanced.json --random-opponents 2 --opponent-models models\dqn_balanced_v2_100k\dqn_model.zip models\dqn_balanced_v2_300k\dqn_model.zip
+```
+
+This means:
+
+```text
+2 RandomBotPolicy entries
+1 DQN 100k opponent
+1 DQN 300k opponent
+```
+
+The environment samples uniformly from the pool, so the effective opponent distribution is:
+
+```text
+50% RandomBotPolicy
+25% DQN 100k
+25% DQN 300k
+```
+
+The mixed training report includes:
+
+```text
+DQN vs training opponent pool
+DQN vs RandomBotPolicy
+DQN vs each opponent model
+Valid-random vs RandomBotPolicy
+```
+
+Evaluate an existing model against the same mixed pool:
+
+```powershell
+.\.venv\Scripts\python.exe rl_training\evaluate_dqn.py --model models\dqn_mixed_v2_1m\dqn_model.zip --episodes 500 --character-config rl_training/configs/characters_balanced.json --random-opponents 2 --opponent-models models\dqn_balanced_v2_100k\dqn_model.zip models\dqn_balanced_v2_300k\dqn_model.zip
+```
+
 ## Notes
 
 - Do not put training-only logic into `app.py`.

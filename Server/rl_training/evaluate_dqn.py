@@ -11,6 +11,7 @@ if str(SERVER_DIR) not in sys.path:
 
 from stable_baselines3 import DQN  # noqa: E402
 
+from rl_env import ModelPolicy, RandomBotPolicy  # noqa: E402
 from rl_training.evaluation import evaluate_policy, format_report, write_text_report  # noqa: E402
 
 
@@ -29,6 +30,18 @@ def parse_args():
         default=None,
         help="Optional text report path. Defaults to <model_dir>/dqn_matchup_breakdown.txt.",
     )
+    parser.add_argument(
+        "--opponent-models",
+        nargs="*",
+        default=[],
+        help="DQN checkpoint paths to evaluate against in addition to RandomBotPolicy.",
+    )
+    parser.add_argument(
+        "--random-opponents",
+        type=int,
+        default=1,
+        help="Number of RandomBotPolicy copies used in the mixed opponent pool.",
+    )
     return parser.parse_args()
 
 
@@ -38,23 +51,54 @@ def main():
     output_path = Path(args.output) if args.output else model_path.parent / "dqn_matchup_breakdown.txt"
 
     model = DQN.load(model_path)
-    dqn_report = evaluate_policy(
-        model=model,
-        episodes=args.episodes,
-        seed=args.seed,
-        character_config_path=args.character_config,
-    )
-    random_report = evaluate_policy(
-        model=None,
-        episodes=args.episodes,
-        seed=args.seed,
-        character_config_path=args.character_config,
+    opponent_pool, loaded_opponent_models = _build_opponent_pool(
+        args.opponent_models,
+        random_opponents=args.random_opponents,
     )
 
-    reports = [
-        ("DQN", dqn_report),
-        ("Valid-random baseline", random_report),
-    ]
+    reports = []
+    reports.append((
+        "DQN vs mixed opponent pool",
+        evaluate_policy(
+            model=model,
+            episodes=args.episodes,
+            seed=args.seed,
+            character_config_path=args.character_config,
+            opponent_pool=opponent_pool,
+        ),
+    ))
+    reports.append((
+        "DQN vs RandomBotPolicy",
+        evaluate_policy(
+            model=model,
+            episodes=args.episodes,
+            seed=args.seed + 10_000,
+            character_config_path=args.character_config,
+            opponent_pool=[RandomBotPolicy()],
+        ),
+    ))
+    for index, (opponent_path, opponent_model) in enumerate(loaded_opponent_models, start=1):
+        reports.append((
+            f"DQN vs opponent model {index}: {_format_model_label(opponent_path)}",
+            evaluate_policy(
+                model=model,
+                episodes=args.episodes,
+                seed=args.seed + 20_000 + index,
+                character_config_path=args.character_config,
+                opponent_pool=[ModelPolicy(opponent_model, deterministic=True)],
+            ),
+        ))
+    reports.append((
+        "Valid-random vs RandomBotPolicy",
+        evaluate_policy(
+            model=None,
+            episodes=args.episodes,
+            seed=args.seed + 30_000,
+            character_config_path=args.character_config,
+            opponent_pool=[RandomBotPolicy()],
+        ),
+    ))
+
     write_text_report(output_path, reports)
 
     for title, report in reports:
@@ -68,6 +112,27 @@ def _resolve_server_path(path):
     if path.is_absolute():
         return path
     return SERVER_DIR / path
+
+
+def _format_model_label(path):
+    path = Path(path)
+    return f"{path.parent.name}/{path.name}"
+
+
+def _build_opponent_pool(opponent_model_paths, random_opponents=1):
+    pool = [RandomBotPolicy() for _ in range(max(0, random_opponents))]
+    loaded_models = []
+
+    for model_path in opponent_model_paths:
+        resolved_path = _resolve_server_path(model_path)
+        opponent_model = DQN.load(resolved_path)
+        pool.append(ModelPolicy(opponent_model, deterministic=True))
+        loaded_models.append((resolved_path, opponent_model))
+
+    if not pool:
+        pool.append(RandomBotPolicy())
+
+    return pool, loaded_models
 
 
 if __name__ == "__main__":

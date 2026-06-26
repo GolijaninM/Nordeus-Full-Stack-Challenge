@@ -12,8 +12,11 @@ from stable_baselines3 import DQN
 from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.monitor import Monitor
 
-from rl_env import RandomBotPolicy, TournamentEnv
+from rl_env import ModelPolicy, RandomBotPolicy, TournamentEnv
 from rl_training.evaluation import evaluate_policy, write_text_report
+
+
+SERVER_DIR = Path(__file__).resolve().parent
 
 
 class TrainingCurveCallback(BaseCallback):
@@ -82,7 +85,7 @@ class TrainingCurveCallback(BaseCallback):
         return np.array(averages, dtype=np.float32)
 
 
-def evaluate_model(model, episodes=50, seed=10_000, character_config_path=None):
+def evaluate_model(model, episodes=50, seed=10_000, character_config_path=None, opponent_pool=None):
     wins = 0
     losses = 0
     draws = 0
@@ -90,7 +93,10 @@ def evaluate_model(model, episodes=50, seed=10_000, character_config_path=None):
     total_reward = 0.0
     episode_lengths = []
 
-    env = TournamentEnv(opponent_pool=[RandomBotPolicy()], character_config_path=character_config_path)
+    env = TournamentEnv(
+        opponent_pool=opponent_pool or [RandomBotPolicy()],
+        character_config_path=character_config_path,
+    )
     for episode_index in range(episodes):
         obs, _ = env.reset(seed=seed + episode_index)
         done = False
@@ -176,16 +182,73 @@ def parse_args():
         default=None,
         help="Episodes used for matchup breakdowns. Defaults to --eval-episodes.",
     )
+    parser.add_argument(
+        "--opponent-models",
+        nargs="*",
+        default=[],
+        help="DQN checkpoint paths to include in the opponent pool.",
+    )
+    parser.add_argument(
+        "--random-opponents",
+        type=int,
+        default=1,
+        help="Number of RandomBotPolicy copies in the opponent pool. Use 2 with two DQN models for 50/25/25.",
+    )
     return parser.parse_args()
+
+
+def build_opponent_pool(opponent_model_paths, random_opponents=1):
+    pool = [RandomBotPolicy() for _ in range(max(0, random_opponents))]
+    loaded_models = []
+
+    for model_path in opponent_model_paths:
+        resolved_path = resolve_server_path(model_path)
+        opponent_model = DQN.load(resolved_path)
+        pool.append(ModelPolicy(opponent_model, deterministic=True))
+        loaded_models.append((resolved_path, opponent_model))
+
+    if not pool:
+        pool.append(RandomBotPolicy())
+
+    return pool, loaded_models
+
+
+def resolve_server_path(path):
+    path = Path(path)
+    if path.is_absolute():
+        return path
+    return SERVER_DIR / path
+
+
+def opponent_pool_description(args):
+    total = max(0, args.random_opponents) + len(args.opponent_models)
+    if total <= 0:
+        return "RandomBotPolicy: 100.00%"
+
+    parts = []
+    if args.random_opponents > 0:
+        parts.append(f"RandomBotPolicy: {(args.random_opponents / total):.2%}")
+    for model_path in args.opponent_models:
+        parts.append(f"{model_path}: {(1 / total):.2%}")
+    return ", ".join(parts)
+
+
+def format_model_label(path):
+    path = Path(path)
+    return f"{path.parent.name}/{path.name}"
 
 
 def main():
     args = parse_args()
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
+    opponent_pool, loaded_opponent_models = build_opponent_pool(
+        args.opponent_models,
+        random_opponents=args.random_opponents,
+    )
 
     train_env = Monitor(TournamentEnv(
-        opponent_pool=[RandomBotPolicy()],
+        opponent_pool=opponent_pool,
         character_config_path=args.character_config,
     ))
     model = build_model(train_env, args.seed)
@@ -201,31 +264,57 @@ def main():
         episodes=args.eval_episodes,
         seed=args.seed + 100_000,
         character_config_path=args.character_config,
+        opponent_pool=opponent_pool,
     )
     write_evaluation(output_dir, metrics)
 
     breakdown_episodes = args.breakdown_episodes or args.eval_episodes
-    dqn_report = evaluate_policy(
-        model=model,
-        episodes=breakdown_episodes,
-        seed=args.seed + 200_000,
-        character_config_path=args.character_config,
-    )
+    reports = []
+    reports.append((
+        "DQN vs training opponent pool",
+        evaluate_policy(
+            model=model,
+            episodes=breakdown_episodes,
+            seed=args.seed + 200_000,
+            character_config_path=args.character_config,
+            opponent_pool=opponent_pool,
+        ),
+    ))
+    reports.append((
+        "DQN vs RandomBotPolicy",
+        evaluate_policy(
+            model=model,
+            episodes=breakdown_episodes,
+            seed=args.seed + 210_000,
+            character_config_path=args.character_config,
+            opponent_pool=[RandomBotPolicy()],
+        ),
+    ))
+    for index, (opponent_path, opponent_model) in enumerate(loaded_opponent_models, start=1):
+        reports.append((
+            f"DQN vs opponent model {index}: {format_model_label(opponent_path)}",
+            evaluate_policy(
+                model=model,
+                episodes=breakdown_episodes,
+                seed=args.seed + 220_000 + index,
+                character_config_path=args.character_config,
+                opponent_pool=[ModelPolicy(opponent_model, deterministic=True)],
+            ),
+        ))
+
     random_report = evaluate_policy(
         model=None,
         episodes=breakdown_episodes,
         seed=args.seed + 200_000,
         character_config_path=args.character_config,
+        opponent_pool=[RandomBotPolicy()],
     )
-    breakdown_path = output_dir / "dqn_matchup_breakdown.txt"
-    write_text_report(
-        breakdown_path,
-        [
-            ("DQN", dqn_report),
-            ("Valid-random baseline", random_report),
-        ],
-    )
+    reports.append(("Valid-random vs RandomBotPolicy", random_report))
 
+    breakdown_path = output_dir / "dqn_matchup_breakdown.txt"
+    write_text_report(breakdown_path, reports)
+
+    print(f"Opponent pool: {opponent_pool_description(args)}")
     print(f"Saved model: {model_path}")
     print(f"Saved curve: {output_dir / 'dqn_training_curve.png'}")
     print(f"Saved rewards: {output_dir / 'dqn_training_curve.csv'}")
