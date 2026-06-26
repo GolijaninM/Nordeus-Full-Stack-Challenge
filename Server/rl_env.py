@@ -77,10 +77,21 @@ class ModelPolicy:
 class TournamentEnv(gym.Env):
     metadata = {"render_modes": []}
 
-    def __init__(self, opponent_pool=None, max_turns=80, invalid_action_penalty=-1.0, character_config_path=None):
+    def __init__(
+        self,
+        opponent_pool=None,
+        max_turns=80,
+        invalid_action_penalty=-1.0,
+        character_config_path=None,
+        starting_actor_mode="opener",
+    ):
         super().__init__()
+        if starting_actor_mode not in ("opener", "flag_only"):
+            raise ValueError("starting_actor_mode must be 'opener' or 'flag_only'.")
+
         self.moves_config = load_config("moves.json")
         self.character_config_path = character_config_path
+        self.starting_actor_mode = starting_actor_mode
         self.characters = self._load_character_templates()
         self.opponent_pool = opponent_pool or [RandomBotPolicy()]
         self.max_turns = max_turns
@@ -129,7 +140,7 @@ class TournamentEnv(gym.Env):
         opening_events = []
         opening_action = None
         opening_move = None
-        if self.starting_actor == "opponent":
+        if self.starting_actor_mode == "opener" and self.starting_actor == "opponent":
             opening_action, opening_result = self._play_opponent_opener(opening_events)
             opening_move = opening_result.get("move_id") if opening_result else None
 
@@ -138,6 +149,7 @@ class TournamentEnv(gym.Env):
             "opponent_id": self.opponent_template.id,
             "opponent_policy": type(self.opponent_policy).__name__,
             "starting_actor": self.starting_actor,
+            "starting_actor_mode": self.starting_actor_mode,
             "agent_started": self.agent_started,
             "opponent_opening_action": opening_action,
             "opponent_opening_move": opening_move,

@@ -12,7 +12,7 @@ if str(SERVER_DIR) not in sys.path:
 from stable_baselines3 import DQN  # noqa: E402
 
 from rl_env import ModelPolicy, RandomBotPolicy  # noqa: E402
-from rl_training.evaluation import evaluate_policy, format_report, write_text_report  # noqa: E402
+from rl_training.evaluation import evaluate_policy, evaluate_symmetric_tournament, format_report, write_text_report  # noqa: E402
 
 
 def parse_args():
@@ -42,6 +42,23 @@ def parse_args():
         default=1,
         help="Number of RandomBotPolicy copies used in the mixed opponent pool.",
     )
+    parser.add_argument(
+        "--starting-actor-mode",
+        choices=("opener", "flag_only"),
+        default="opener",
+        help="Use 'opener' for the old free opening move, or 'flag_only' for fair-init evaluation.",
+    )
+    parser.add_argument(
+        "--symmetric-eval",
+        action="store_true",
+        help="Also write/print symmetric tournament reports over every character matchup and both starting actors.",
+    )
+    parser.add_argument(
+        "--episodes-per-matchup",
+        type=int,
+        default=5,
+        help="Repetitions per ordered matchup/start-side pair for --symmetric-eval.",
+    )
     return parser.parse_args()
 
 
@@ -65,6 +82,7 @@ def main():
             seed=args.seed,
             character_config_path=args.character_config,
             opponent_pool=opponent_pool,
+            starting_actor_mode=args.starting_actor_mode,
         ),
     ))
     reports.append((
@@ -75,6 +93,7 @@ def main():
             seed=args.seed + 10_000,
             character_config_path=args.character_config,
             opponent_pool=[RandomBotPolicy()],
+            starting_actor_mode=args.starting_actor_mode,
         ),
     ))
     for index, (opponent_path, opponent_model) in enumerate(loaded_opponent_models, start=1):
@@ -86,6 +105,7 @@ def main():
                 seed=args.seed + 20_000 + index,
                 character_config_path=args.character_config,
                 opponent_pool=[ModelPolicy(opponent_model, deterministic=True)],
+                starting_actor_mode=args.starting_actor_mode,
             ),
         ))
     reports.append((
@@ -96,8 +116,33 @@ def main():
             seed=args.seed + 30_000,
             character_config_path=args.character_config,
             opponent_pool=[RandomBotPolicy()],
+            starting_actor_mode=args.starting_actor_mode,
         ),
     ))
+
+    if args.symmetric_eval:
+        reports.append((
+            "DQN symmetric tournament vs mixed opponent pool",
+            evaluate_symmetric_tournament(
+                model=model,
+                episodes_per_matchup=args.episodes_per_matchup,
+                seed=args.seed + 40_000,
+                character_config_path=args.character_config,
+                opponent_pool=opponent_pool,
+                starting_actor_mode=args.starting_actor_mode,
+            ),
+        ))
+        reports.append((
+            "DQN symmetric tournament vs RandomBotPolicy",
+            evaluate_symmetric_tournament(
+                model=model,
+                episodes_per_matchup=args.episodes_per_matchup,
+                seed=args.seed + 50_000,
+                character_config_path=args.character_config,
+                opponent_pool=[RandomBotPolicy()],
+                starting_actor_mode=args.starting_actor_mode,
+            ),
+        ))
 
     write_text_report(output_path, reports)
 

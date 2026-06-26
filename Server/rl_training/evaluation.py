@@ -71,57 +71,113 @@ def evaluate_policy(
     seed=10_000,
     character_config_path=None,
     opponent_pool=None,
+    starting_actor_mode="opener",
     deterministic=True,
 ):
     env = TournamentEnv(
         opponent_pool=opponent_pool or [RandomBotPolicy()],
         character_config_path=character_config_path,
+        starting_actor_mode=starting_actor_mode,
     )
 
     summary = _empty_bucket()
-    breakdowns = {
+    breakdowns = _empty_breakdowns()
+
+    for episode_index in range(episodes):
+        obs, _ = env.reset(seed=seed + episode_index)
+        _record_episode_result(env, model, obs, summary, breakdowns, deterministic)
+
+    return _finalize_report(summary, breakdowns)
+
+
+def evaluate_symmetric_tournament(
+    model=None,
+    episodes_per_matchup=5,
+    seed=30_000,
+    character_config_path=None,
+    opponent_pool=None,
+    starting_actor_mode="flag_only",
+    deterministic=True,
+):
+    env = TournamentEnv(
+        opponent_pool=opponent_pool or [RandomBotPolicy()],
+        character_config_path=character_config_path,
+        starting_actor_mode=starting_actor_mode,
+    )
+
+    summary = _empty_bucket()
+    breakdowns = _empty_breakdowns()
+    episode_index = 0
+
+    for agent_template in env.characters:
+        for opponent_template in env.characters:
+            if agent_template.id == opponent_template.id:
+                continue
+            for starting_actor in ("agent", "opponent"):
+                for _ in range(episodes_per_matchup):
+                    obs, _ = env.reset(
+                        seed=seed + episode_index,
+                        options={
+                            "agent_template": agent_template,
+                            "opponent_template": opponent_template,
+                            "starting_actor": starting_actor,
+                        },
+                    )
+                    _record_episode_result(env, model, obs, summary, breakdowns, deterministic)
+                    episode_index += 1
+
+    return _finalize_report(summary, breakdowns)
+
+
+def _empty_breakdowns():
+    return {
         "agent_character": defaultdict(_empty_bucket),
         "opponent_character": defaultdict(_empty_bucket),
         "dragon_presence": defaultdict(_empty_bucket),
         "initiative": defaultdict(_empty_bucket),
+        "matchup": defaultdict(_empty_bucket),
     }
 
-    for episode_index in range(episodes):
-        obs, _ = env.reset(seed=seed + episode_index)
-        episode_reward = 0.0
-        episode_length = 0
-        invalid_actions = 0
-        done = False
-        final_info = {}
-        truncated_episode = False
 
-        while not done:
-            if model is None:
-                action = _valid_random_action(env)
-            else:
-                action, _ = model.predict(obs, deterministic=deterministic)
-                action = int(action)
+def _record_episode_result(env, model, obs, summary, breakdowns, deterministic):
+    episode_reward = 0.0
+    episode_length = 0
+    invalid_actions = 0
+    done = False
+    final_info = {}
+    truncated_episode = False
 
-            obs, reward, terminated, truncated, info = env.step(action)
-            episode_reward += reward
-            episode_length += 1
-            invalid_actions += int(info.get("invalid_action", False))
-            done = terminated or truncated
-            final_info = info
-            truncated_episode = bool(truncated)
+    while not done:
+        if model is None:
+            action = _valid_random_action(env)
+        else:
+            action, _ = model.predict(obs, deterministic=deterministic)
+            action = int(action)
 
-        winner = final_info.get("winner")
-        agent_name = env.agent_template.name
-        opponent_name = env.opponent_template.name
-        initiative = "agent_started" if env.agent_started else "opponent_started"
-        dragon_presence = _dragon_presence(agent_name, opponent_name)
+        obs, reward, terminated, truncated, info = env.step(action)
+        episode_reward += reward
+        episode_length += 1
+        invalid_actions += int(info.get("invalid_action", False))
+        done = terminated or truncated
+        final_info = info
+        truncated_episode = bool(truncated)
 
-        _add_result(summary, winner, episode_reward, episode_length, invalid_actions, truncated_episode)
-        _add_result(breakdowns["agent_character"][agent_name], winner, episode_reward, episode_length, invalid_actions, truncated_episode)
-        _add_result(breakdowns["opponent_character"][opponent_name], winner, episode_reward, episode_length, invalid_actions, truncated_episode)
-        _add_result(breakdowns["dragon_presence"][dragon_presence], winner, episode_reward, episode_length, invalid_actions, truncated_episode)
-        _add_result(breakdowns["initiative"][initiative], winner, episode_reward, episode_length, invalid_actions, truncated_episode)
+    winner = final_info.get("winner")
+    agent_name = env.agent_template.name
+    opponent_name = env.opponent_template.name
+    initiative = "agent_started" if env.agent_started else "opponent_started"
+    dragon_presence = _dragon_presence(agent_name, opponent_name)
+    matchup = f"{agent_name} vs {opponent_name}"
 
+    _add_result(summary, winner, episode_reward, episode_length, invalid_actions, truncated_episode)
+    _add_result(breakdowns["agent_character"][agent_name], winner, episode_reward, episode_length, invalid_actions, truncated_episode)
+    _add_result(breakdowns["opponent_character"][opponent_name], winner, episode_reward, episode_length, invalid_actions, truncated_episode)
+    _add_result(breakdowns["dragon_presence"][dragon_presence], winner, episode_reward, episode_length, invalid_actions, truncated_episode)
+    _add_result(breakdowns["initiative"][initiative], winner, episode_reward, episode_length, invalid_actions, truncated_episode)
+    _add_result(breakdowns["matchup"][matchup], winner, episode_reward, episode_length, invalid_actions, truncated_episode)
+
+
+def _finalize_report(summary, breakdowns):
     return {
         "summary": _finalize_bucket(summary),
         "breakdowns": {

@@ -13,7 +13,7 @@ from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.monitor import Monitor
 
 from rl_env import ModelPolicy, RandomBotPolicy, TournamentEnv
-from rl_training.evaluation import evaluate_policy, write_text_report
+from rl_training.evaluation import evaluate_policy, evaluate_symmetric_tournament, write_text_report
 
 
 SERVER_DIR = Path(__file__).resolve().parent
@@ -85,7 +85,14 @@ class TrainingCurveCallback(BaseCallback):
         return np.array(averages, dtype=np.float32)
 
 
-def evaluate_model(model, episodes=50, seed=10_000, character_config_path=None, opponent_pool=None):
+def evaluate_model(
+    model,
+    episodes=50,
+    seed=10_000,
+    character_config_path=None,
+    opponent_pool=None,
+    starting_actor_mode="opener",
+):
     wins = 0
     losses = 0
     draws = 0
@@ -96,6 +103,7 @@ def evaluate_model(model, episodes=50, seed=10_000, character_config_path=None, 
     env = TournamentEnv(
         opponent_pool=opponent_pool or [RandomBotPolicy()],
         character_config_path=character_config_path,
+        starting_actor_mode=starting_actor_mode,
     )
     for episode_index in range(episodes):
         obs, _ = env.reset(seed=seed + episode_index)
@@ -194,6 +202,23 @@ def parse_args():
         default=1,
         help="Number of RandomBotPolicy copies in the opponent pool. Use 2 with two DQN models for 50/25/25.",
     )
+    parser.add_argument(
+        "--starting-actor-mode",
+        choices=("opener", "flag_only"),
+        default="opener",
+        help="Use 'opener' for the old free opening move, or 'flag_only' for fair-init training.",
+    )
+    parser.add_argument(
+        "--symmetric-eval",
+        action="store_true",
+        help="Also write a symmetric tournament report over every character matchup and both starting actors.",
+    )
+    parser.add_argument(
+        "--episodes-per-matchup",
+        type=int,
+        default=5,
+        help="Repetitions per ordered matchup/start-side pair for --symmetric-eval.",
+    )
     return parser.parse_args()
 
 
@@ -250,6 +275,7 @@ def main():
     train_env = Monitor(TournamentEnv(
         opponent_pool=opponent_pool,
         character_config_path=args.character_config,
+        starting_actor_mode=args.starting_actor_mode,
     ))
     model = build_model(train_env, args.seed)
     callback = TrainingCurveCallback(output_dir=output_dir, moving_average_window=args.curve_window)
@@ -265,6 +291,7 @@ def main():
         seed=args.seed + 100_000,
         character_config_path=args.character_config,
         opponent_pool=opponent_pool,
+        starting_actor_mode=args.starting_actor_mode,
     )
     write_evaluation(output_dir, metrics)
 
@@ -278,6 +305,7 @@ def main():
             seed=args.seed + 200_000,
             character_config_path=args.character_config,
             opponent_pool=opponent_pool,
+            starting_actor_mode=args.starting_actor_mode,
         ),
     ))
     reports.append((
@@ -288,6 +316,7 @@ def main():
             seed=args.seed + 210_000,
             character_config_path=args.character_config,
             opponent_pool=[RandomBotPolicy()],
+            starting_actor_mode=args.starting_actor_mode,
         ),
     ))
     for index, (opponent_path, opponent_model) in enumerate(loaded_opponent_models, start=1):
@@ -299,6 +328,7 @@ def main():
                 seed=args.seed + 220_000 + index,
                 character_config_path=args.character_config,
                 opponent_pool=[ModelPolicy(opponent_model, deterministic=True)],
+                starting_actor_mode=args.starting_actor_mode,
             ),
         ))
 
@@ -308,17 +338,49 @@ def main():
         seed=args.seed + 200_000,
         character_config_path=args.character_config,
         opponent_pool=[RandomBotPolicy()],
+        starting_actor_mode=args.starting_actor_mode,
     )
     reports.append(("Valid-random vs RandomBotPolicy", random_report))
 
     breakdown_path = output_dir / "dqn_matchup_breakdown.txt"
     write_text_report(breakdown_path, reports)
 
+    symmetric_path = None
+    if args.symmetric_eval:
+        symmetric_reports = []
+        symmetric_reports.append((
+            "DQN symmetric tournament vs training opponent pool",
+            evaluate_symmetric_tournament(
+                model=model,
+                episodes_per_matchup=args.episodes_per_matchup,
+                seed=args.seed + 300_000,
+                character_config_path=args.character_config,
+                opponent_pool=opponent_pool,
+                starting_actor_mode=args.starting_actor_mode,
+            ),
+        ))
+        symmetric_reports.append((
+            "DQN symmetric tournament vs RandomBotPolicy",
+            evaluate_symmetric_tournament(
+                model=model,
+                episodes_per_matchup=args.episodes_per_matchup,
+                seed=args.seed + 310_000,
+                character_config_path=args.character_config,
+                opponent_pool=[RandomBotPolicy()],
+                starting_actor_mode=args.starting_actor_mode,
+            ),
+        ))
+        symmetric_path = output_dir / "dqn_symmetric_tournament.txt"
+        write_text_report(symmetric_path, symmetric_reports)
+
     print(f"Opponent pool: {opponent_pool_description(args)}")
+    print(f"Starting actor mode: {args.starting_actor_mode}")
     print(f"Saved model: {model_path}")
     print(f"Saved curve: {output_dir / 'dqn_training_curve.png'}")
     print(f"Saved rewards: {output_dir / 'dqn_training_curve.csv'}")
     print(f"Saved matchup breakdown: {breakdown_path}")
+    if symmetric_path:
+        print(f"Saved symmetric tournament: {symmetric_path}")
     print(f"Evaluation: {metrics}")
 
 

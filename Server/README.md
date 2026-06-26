@@ -253,7 +253,7 @@ After training baseline DQN checkpoints against `RandomBotPolicy`, the next phas
 Example 50/25/25 pool:
 
 ```powershell
-.\.venv\Scripts\python.exe train_dqn.py --timesteps 1000000 --eval-episodes 500 --breakdown-episodes 500 --output-dir models\dqn_mixed_v2_1m --character-config rl_training/configs/characters_balanced.json --random-opponents 2 --opponent-models models\dqn_balanced_v2_100k\dqn_model.zip models\dqn_balanced_v2_300k\dqn_model.zip
+.\.venv\Scripts\python.exe train_dqn.py --timesteps 1000000 --eval-episodes 500 --breakdown-episodes 500 --output-dir models\DQN\balanced_opener\dqn_mixed_v2_1m --character-config rl_training/configs/characters_balanced.json --random-opponents 2 --opponent-models models\DQN\balanced_opener\dqn_balanced_v2_100k\dqn_model.zip models\DQN\balanced_opener\dqn_balanced_v2_300k\dqn_model.zip
 ```
 
 This means:
@@ -281,11 +281,64 @@ DQN vs each opponent model
 Valid-random vs RandomBotPolicy
 ```
 
+## Fair Initiative Mode
+
+The original environment uses:
+
+```text
+--starting-actor-mode opener
+```
+
+In this mode, if the opponent starts, it immediately plays an opening move during `reset()` before the agent gets its first action.
+
+For fairer algorithm comparisons, use:
+
+```text
+--starting-actor-mode flag_only
+```
+
+In this mode the observation still contains `side_started_flag`, but the opponent does not receive a free opening move before the agent's first action.
+
+Example fair-init DQN run:
+
+```powershell
+.\.venv\Scripts\python.exe train_dqn.py --timesteps 300000 --eval-episodes 500 --breakdown-episodes 500 --output-dir models\DQN\fair_init\dqn_fair_random_300k --character-config rl_training/configs/characters_balanced.json --starting-actor-mode flag_only --symmetric-eval --episodes-per-matchup 10
+```
+
+Symmetric evaluation tests every ordered character matchup with both starting actors:
+
+```text
+agent starts
+opponent starts
+```
+
+This is the preferred evaluation mode for comparing DQN, PPO, SAC, and NEAT.
+
 Evaluate an existing model against the same mixed pool:
 
 ```powershell
-.\.venv\Scripts\python.exe rl_training\evaluate_dqn.py --model models\dqn_mixed_v2_1m\dqn_model.zip --episodes 500 --character-config rl_training/configs/characters_balanced.json --random-opponents 2 --opponent-models models\dqn_balanced_v2_100k\dqn_model.zip models\dqn_balanced_v2_300k\dqn_model.zip
+.\.venv\Scripts\python.exe rl_training\evaluate_dqn.py --model models\DQN\balanced_opener\dqn_mixed_v2_1m\dqn_model.zip --episodes 500 --character-config rl_training/configs/characters_balanced.json --random-opponents 2 --opponent-models models\DQN\balanced_opener\dqn_balanced_v2_100k\dqn_model.zip models\DQN\balanced_opener\dqn_balanced_v2_300k\dqn_model.zip
 ```
+
+## Model Folders
+
+DQN experiment outputs are grouped under:
+
+```text
+models/DQN/
+```
+
+Current groups:
+
+```text
+models/DQN/original_unbalanced/
+models/DQN/balanced_opener/
+models/DQN/fair_init/
+```
+
+- `original_unbalanced/` contains early DQN runs against the original game character balance.
+- `balanced_opener/` contains balanced-character DQN runs that still use the old opener initiative mode.
+- `fair_init/` is for new runs using `--starting-actor-mode flag_only`.
 
 ## Notes
 
