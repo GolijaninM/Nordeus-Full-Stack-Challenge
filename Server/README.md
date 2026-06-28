@@ -281,6 +281,57 @@ DQN vs each opponent model
 Valid-random vs RandomBotPolicy
 ```
 
+## PPO Training
+
+PPO uses the same `TournamentEnv`, balanced character config, fair initiative mode, matchup breakdowns, and symmetric evaluation as DQN. The only intended difference is the learning algorithm.
+
+Run a short smoke training:
+
+```powershell
+.\.venv\Scripts\python.exe -B train_ppo.py --timesteps 64 --eval-episodes 3 --breakdown-episodes 3 --output-dir models\PPO\fair_init\ppo_smoke --character-config rl_training/configs/characters_balanced.json --starting-actor-mode flag_only --symmetric-eval --episodes-per-matchup 1
+```
+
+Phase 1, random-only 100k:
+
+```powershell
+.\.venv\Scripts\python.exe -B train_ppo.py --timesteps 100000 --eval-episodes 500 --breakdown-episodes 500 --output-dir models\PPO\fair_init\ppo_fair_random_100k --character-config rl_training/configs/characters_balanced.json --starting-actor-mode flag_only --symmetric-eval --episodes-per-matchup 5
+```
+
+Phase 1, random-only 300k:
+
+```powershell
+.\.venv\Scripts\python.exe -B train_ppo.py --timesteps 300000 --eval-episodes 500 --breakdown-episodes 500 --output-dir models\PPO\fair_init\ppo_fair_random_300k --character-config rl_training/configs/characters_balanced.json --starting-actor-mode flag_only --symmetric-eval --episodes-per-matchup 5
+```
+
+Phase 2, mixed opponent pool:
+
+```powershell
+.\.venv\Scripts\python.exe -B train_ppo.py --timesteps 1000000 --eval-episodes 500 --breakdown-episodes 500 --output-dir models\PPO\fair_init\ppo_fair_mixed_phase2_1m --character-config rl_training/configs/characters_balanced.json --starting-actor-mode flag_only --symmetric-eval --episodes-per-matchup 5 --random-opponents 2 --opponent-models models\PPO\fair_init\ppo_fair_random_100k\ppo_model.zip models\PPO\fair_init\ppo_fair_random_300k\ppo_model.zip
+```
+
+Phase 3, final PPO self-play:
+
+```powershell
+.\.venv\Scripts\python.exe -B train_ppo.py --timesteps 1000000 --eval-episodes 1000 --breakdown-episodes 1000 --output-dir models\PPO\fair_init\ppo_fair_phase3_final_1m --character-config rl_training/configs/characters_balanced.json --starting-actor-mode flag_only --symmetric-eval --episodes-per-matchup 10 --random-opponents 1 --opponent-models models\PPO\fair_init\ppo_fair_random_300k\ppo_model.zip models\PPO\fair_init\ppo_fair_mixed_phase2_1m\ppo_model.zip models\PPO\fair_init\ppo_fair_mixed_phase2_1m\ppo_model.zip
+```
+
+Outputs:
+
+```text
+models/PPO/fair_init/<run_name>/ppo_model.zip
+models/PPO/fair_init/<run_name>/ppo_training_curve.csv
+models/PPO/fair_init/<run_name>/ppo_training_curve.png
+models/PPO/fair_init/<run_name>/ppo_evaluation.txt
+models/PPO/fair_init/<run_name>/ppo_matchup_breakdown.txt
+models/PPO/fair_init/<run_name>/ppo_symmetric_tournament.txt
+```
+
+Evaluate an existing PPO model without retraining:
+
+```powershell
+.\.venv\Scripts\python.exe -B rl_training\evaluate_ppo.py --model models\PPO\fair_init\ppo_fair_phase3_final_1m\ppo_model.zip --episodes 1000 --character-config rl_training/configs/characters_balanced.json --starting-actor-mode flag_only --symmetric-eval --episodes-per-matchup 10
+```
+
 ## Fair Initiative Mode
 
 The original environment uses:
@@ -334,11 +385,13 @@ Current groups:
 models/DQN/original_unbalanced/
 models/DQN/balanced_opener/
 models/DQN/fair_init/
+models/PPO/fair_init/
 ```
 
 - `original_unbalanced/` contains early DQN runs against the original game character balance.
 - `balanced_opener/` contains balanced-character DQN runs that still use the old opener initiative mode.
 - `fair_init/` is for new runs using `--starting-actor-mode flag_only`.
+- `models/PPO/fair_init/` contains PPO runs that follow the same fair-init methodology as final DQN.
 
 ## Notes
 
