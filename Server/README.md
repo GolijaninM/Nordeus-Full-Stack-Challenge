@@ -332,6 +332,14 @@ Evaluate an existing PPO model without retraining:
 .\.venv\Scripts\python.exe -B rl_training\evaluate_ppo.py --model models\PPO\fair_init\ppo_fair_phase3_final_1m\ppo_model.zip --episodes 1000 --character-config rl_training/configs/characters_balanced.json --starting-actor-mode flag_only --symmetric-eval --episodes-per-matchup 10
 ```
 
+Record detailed PPO phase 2 vs phase 3 gameplay traces:
+
+```powershell
+.\.venv\Scripts\python.exe -B rl_training\diagnose_matchups.py --algorithm ppo --agent-model models\PPO\fair_init\ppo_fair_mixed_phase2_1m\ppo_model.zip --opponent-model models\PPO\fair_init\ppo_fair_phase3_final_1m\ppo_model.zip --agent-label PPO_phase2 --opponent-label PPO_phase3 --random-games 8 --include-fixed-combo-cases --swap-perspective --output models\PPO\fair_init\ppo_phase2_vs_phase3_diagnostics.md
+```
+
+The diagnostic report writes turn-by-turn move choices, HP changes, DOT/enrage events, triggered combos, and aggregate move usage.
+
 ## Fair Initiative Mode
 
 The original environment uses:

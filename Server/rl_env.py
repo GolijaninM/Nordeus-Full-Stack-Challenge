@@ -236,6 +236,8 @@ class TournamentEnv(gym.Env):
             "opponent_action": opponent_action,
             "agent_move": agent_result.get("move_id") if agent_result else None,
             "opponent_move": opponent_result.get("move_id") if opponent_result else None,
+            "agent_result": agent_result,
+            "opponent_result": opponent_result,
             "damage_dealt": damage_dealt,
             "damage_taken": damage_taken,
             "events": events,
